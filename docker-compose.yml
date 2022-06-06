@@ -1,0 +1,99 @@
+version: '3'
+services:
+  # Frontend NodeJS
+  frontend:
+    build:
+      context: ./frontend/
+    command: npm start
+    volumes:
+      - ./frontend/:/usr/app
+      - /usr/app/node_modules
+    networks:
+      - common_network
+    ports:
+      - "3033:3000"
+
+  # PHP 8
+  common_php8:
+    build:
+      context: .
+      dockerfile: ./php/Dockerfile
+    image: common_php8/latest
+    container_name: common_php8
+    restart: unless-stopped
+    tty: true
+    environment:
+      SERVICE_NAME: common_php8
+      SERVICE_TAGS: dev
+    working_dir: /var/www
+    volumes:
+      - ./laravel/:/var/www
+      - ./php/local.ini:/usr/local/etc/php/conf.d/local.ini
+    networks:
+      - common_network
+
+  # Nginx Service
+  common_nginx:
+    image: nginx:alpine
+    container_name: common_nginx
+    restart: unless-stopped
+    tty: true
+    ports:
+      - "84:80"
+      - "442:443"
+    volumes:
+      - ./laravel/:/var/www
+      - ./nginx/conf.d/:/etc/nginx/conf.d/
+    networks:
+      - common_network
+
+  #Node Service
+  common_node_alpine:
+    image: node:alpine
+    container_name: common_node_alp
+    restart: unless-stopped
+    tty: true
+    volumes:
+      - ./laravel/:/var/www
+    networks:
+      - common_network
+
+  #MySQL Services
+  common_mysql57:
+    image: mysql:5.7.22
+    container_name: common_mysql57
+    restart: unless-stopped
+    tty: true
+    ports:
+      - "3302:3306"
+    environment:
+      MYSQL_DATABASE: laravel
+      MYSQL_ROOT_PASSWORD: MY_SQL_ROOT_PASS
+      SERVICE_TAGS: dev
+      SERVICE_NAME: mysql
+    volumes:
+      - dbdata:/var/lib/mysql/
+      - ./mysql/my.cnf:/etc/mysql/my.cnf
+    networks:
+      - common_network
+
+  #Redis Service
+  common_redis:
+    image: "redis:alpine"
+    container_name: common_redis
+    restart: unless-stopped
+    tty: true
+    command: redis-server
+    ports:
+      - "6372:6379"
+    networks:
+      - common_network
+
+#Docker Networks
+networks:
+  common_network:
+    driver: bridge
+#Volumes
+volumes:
+  dbdata:
+    driver: local
