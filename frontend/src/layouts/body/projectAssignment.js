@@ -16,6 +16,8 @@ class projectAssignment extends React.Component {
         this.state = {
             assignment : this.props.assignment,
             roles : this.props.roles,
+            originalRoles : null,
+
             selectRoles : this.props.assignment.roles_data,
 
             checkDisabled : null,
@@ -56,6 +58,7 @@ class projectAssignment extends React.Component {
             selectedRolesIds.push(role.id)
         })
         let availableRoles = []
+        let localRoles = []
         this.state.roles.map(role => {
             if (!selectedRolesIds.includes(role.id)){
                 availableRoles.push(role)
@@ -63,7 +66,7 @@ class projectAssignment extends React.Component {
         })
         //console.log(availableRoles)
         this.setState({
-            availableRoles : availableRoles
+            availableRoles : availableRoles,
         })
     }
 
@@ -251,6 +254,7 @@ class projectAssignment extends React.Component {
     addRole = () => {
         console.log(this.state.addRoles)
         console.log(this.state.availableRoles)
+        console.log(this.state.roles)
 
         //let newRole = this.state.addRoles
 
@@ -264,7 +268,13 @@ class projectAssignment extends React.Component {
                 availableRoles : availableRoles,
                 selectRoles : newSelectRoles
             })
+            console.log('newSelectRoles : ')
+            console.log(newSelectRoles)
+            console.log('availableRoles : ')
+            console.log(availableRoles)
         }
+
+
 
 
 
@@ -321,8 +331,6 @@ class projectAssignment extends React.Component {
 
     allSelectRoles = ( event ) => {
 
-        //console.log(event)
-
         let roleInRoles = false,
             needToUpdate = false,
             key
@@ -344,6 +352,7 @@ class projectAssignment extends React.Component {
             if (needToUpdate && key){
                 selectedRoles.splice(key,1)
             }
+
             selectedRoles.push(event)
             this.setState({
                 allSelectedRoles : selectedRoles
@@ -370,7 +379,8 @@ class projectAssignment extends React.Component {
             availableRoles : availableRoles,
         })
 
-
+        //console.log('ROLES : ')
+        //console.log(this.state.roles)
 
 
         /*let prohibitedRoles = []
@@ -399,9 +409,35 @@ class projectAssignment extends React.Component {
         console.log(this.state.availableRoles)*/
 
         if (event.trigger == "selectRole"){
+            console.log('IDS : ')
+            console.log(selectedRolesIds)
+
+            console.log('EVENT : ')
+            console.log(event)
+
             this.setState({
                 localKey : this.state.localKey+1
             })
+            console.log('selected role : ')
+            console.log(event)
+            console.log('available roles : ')
+            console.log(availableRoles)
+
+            if (event.firstRole){
+                let availableRolesIds = []
+                let newAvailableRoles = []
+                this.state.availableRoles.map(role => {
+                    availableRolesIds.push(role.id)
+                    newAvailableRoles.push(role)
+                })
+                if (!availableRolesIds.includes(event.firstRole)){
+                    //let newAvailableRole = this.props.roles.find(role=>role.id==event.firstRole)
+                    //console.log(newAvailableRole)
+                    console.log(this.props.roles)
+                    console.log(this.state.originalRoles)
+                    console.log(this.props.copyRoles)
+                }
+            }
         }
 
         if (event.trigger == "addRole"){
@@ -451,8 +487,13 @@ class projectAssignment extends React.Component {
             })
             console.log(newCurrentRoles)*/
         }
+    }
 
-
+    returnAssignment = (event) => {
+        console.log('assignment return : ')
+        console.log( event )
+        console.log('all assignments : ')
+        console.log( this.state.availableRoles )
     }
 
     render(){
@@ -485,6 +526,7 @@ class projectAssignment extends React.Component {
                             prohibitedRoles={this.state.prohibitedRoles}
                             role={role.currentRole}
                             sendData={this.allSelectRoles}
+                            returnAssignment={this.returnAssignment}
 
                             item={item}
                             />
@@ -515,6 +557,8 @@ class projectAssignment extends React.Component {
                                     prohibitedRoles={this.state.prohibitedRoles}
                                     availableRoles={this.state.availableRoles}
                                     sendData={this.allSelectRoles}
+
+                                    returnAssignment={this.returnAssignment}
                                 />
                             }
                         )

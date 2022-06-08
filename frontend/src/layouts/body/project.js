@@ -11,6 +11,7 @@ import ObjectsRead from "./objectsRead"
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPen } from '@fortawesome/free-solid-svg-icons'
 import ApiProj from './../../api/Projects'
+import ApiUser from './../../api/User'
 import ProjectMenu from './../../components/menu/projectMenu'
 import ProjectParticipants from './projectParticipants'
 import ModelReadiness from './Project/modelReadiness'
@@ -51,6 +52,7 @@ var projectStatuses = null
 
 const Project = (props) => {
     const [connect, setConnect] = useState(0);
+    const [userAss, setAssignment] = useState(0)
     const params = useParams()
     const projId = params.id
     const trigger = params.trigger
@@ -156,7 +158,8 @@ const Project = (props) => {
                 </div>
             )
         } else if (trigger == "read"){
-            sideBar = <Sidebar key={"0"} user={props.user} projectId={projId} tabSelected="0" asdaf="asd"/>
+
+            sideBar = <Sidebar key={"0"} user={props.user} projectId={projId} tabSelected="0" />
             projectDom = (
                 <ProjectInfo id={projId} user={props.user} projectData={projectData} />
             )

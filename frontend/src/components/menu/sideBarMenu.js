@@ -24,17 +24,23 @@ class sideBarMenu extends React.Component {
                             },*/
 
                         ]
-        if (props.user){
-            if (props.user.user_role){
+        if (props.user && props.userAssignments){
+            if (props.user.user_role && props.userAssignments.roles_data.length > 0){
                 readiness.push({
                     id: 2,
                     name: "Оценка готовности модели",
                     link: "/project/"+this.props.projectId+"/model_readiness",
                 })
             }
+        } else if (props.selectedTab == 2){
+            readiness.push({
+                id: 2,
+                name: "Оценка готовности модели",
+                link: "/project/"+this.props.projectId+"/model_readiness",
+            })
         }
-        console.log('SIDEBAR PROPS :')
-        console.log(props)
+        //console.log('SIDEBAR PROPS :')
+        //console.log(props)
         this.state = {
             selectedTab : this.props.selectedTab,
             tabs : readiness
@@ -43,8 +49,8 @@ class sideBarMenu extends React.Component {
 
 
    componentDidMount() {
-   console.log('MENU USER')
-        console.log(this.props)
+        //console.log('MENU USER')
+        //console.log(this.props)
         //console.log(this.state.tabs)
    }
 

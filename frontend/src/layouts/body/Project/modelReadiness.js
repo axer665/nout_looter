@@ -19,6 +19,8 @@ class modelReadiness extends React.Component {
             selectedObjectType: null,
             selectedStage: null,
         }
+        //console.log('READINESS PROPS : ')
+        //console.log(props)
     }
 
 
@@ -30,7 +32,7 @@ class modelReadiness extends React.Component {
     }
 
     getModels = () => {
-        ApiModel.getModels({'projectId': this.props.projectId, 'getCheckLists':true, 'getTemplates':true})
+        ApiModel.getModels({'projectId': this.props.projectId, 'userId': this.props.user.id, 'getCheckLists':true, 'getTemplates':true})
         .then(response => {
             //console.log(response.data)
             this.setState({

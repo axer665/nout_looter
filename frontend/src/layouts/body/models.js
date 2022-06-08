@@ -17,9 +17,11 @@ class models extends React.Component {
             informers: [],
             models : [],
             sections : [],
+            stages : [],
 
             newModelName : '',
             selectedSection : 0,
+            selectedStage : 0,
 
             objectId : this.props.objectId
         }
@@ -33,6 +35,7 @@ class models extends React.Component {
             this.setState({
                 models : response.data.models,
                 sections : response.data.sections,
+                stages : response.data.stages,
             })
         })
     }
@@ -43,6 +46,12 @@ class models extends React.Component {
         })
     }
 
+    newSelectedStage = (event) => {
+        this.setState({
+            selectedStage : event.target.value
+        })
+    }
+
     newModelName = (event) => {
         this.setState({
             newModelName : event.target.value
@@ -50,6 +59,7 @@ class models extends React.Component {
     }
 
     componentDidMount() {
+        console.log('canvas')
 
     }
 
@@ -72,14 +82,17 @@ class models extends React.Component {
     addModelMethod = () => {
         const data = {
             section_id: this.state.selectedSection,
+            stage_id: this.state.selectedStage,
             name: this.state.newModelName,
             object_id: this.props.objectId,
         }
 
         if (!data.section_id){
-            this.addInformer('error 1')
+            this.addInformer('Вы не выбрали раздел проекта для создаваемой модели')
+        } else if (!data.stage_id) {
+            this.addInformer('Вы не выбрали стадию проекта для создаваемой модели')
         } else if (!data.name) {
-            this.addInformer('error 2')
+            this.addInformer('Укажите наименование создаваемой модели')
         } else {
             const headers = ApiModel.getHeaders()
             Axios.post('http://192.168.160.62:84/api/model', data, {
@@ -116,6 +129,9 @@ class models extends React.Component {
                         <div className="model_list-section_header">
                             Раздел проекта
                         </div>
+                        <div className="model_list-stage_header">
+                            Стадия проекта
+                        </div>
                     </div>
                 )
 
@@ -124,17 +140,25 @@ class models extends React.Component {
                 {header}
                 {
                     this.state.models.map( model => {
-                        let objectType = "<Не выбрано>"
+                        let modelSection = "<Не выбрано>"
                         if (model.model_section){
-                            objectType = model.model_section.short_name
+                            modelSection = model.model_section.short_name
                         }
+                        let modelStage = "<Не выбрано>"
+                        if (model.model_stage){
+                            modelStage = model.model_stage.short_name
+                        }
+
                         return (
                             <div key={model.id} className="d-flex flex-row bd-highlight mb-3 model_list-items justify-content-center">
                                 <div className="model_list-item-name">
                                     {model.name}
                                 </div>
                                 <div className="model_list-item-section">
-                                    {objectType}
+                                    {modelSection}
+                                </div>
+                                <div className="model_list-item-stage">
+                                    {modelStage}
                                 </div>
                                 <div className="model_list-item-control">
                                     <Link to={"/model/"+model.id} >
@@ -159,10 +183,25 @@ class models extends React.Component {
             )
         )
 
+        const selectStageOption = (
+            this.state.stages.map(
+                (stage, key) => {
+                    return (<option key={stage.id} value={stage.id}> {stage.short_name} </option>)
+                }
+            )
+        )
+
         let selectSection = (
             <select defaultValue="0" onChange={this.newSelectedSection}>
                 <option value="0" disabled> Не выбрано </option>
                 {selectSectionOptions}
+            </select>
+        )
+
+        let selectStage = (
+            <select defaultValue="0" onChange={this.newSelectedStage}>
+                <option value="0" disabled> Не выбрано </option>
+                {selectStageOption}
             </select>
         )
 
@@ -173,9 +212,10 @@ class models extends React.Component {
                     <input type="text" value={this.state.newModelName} onChange={this.newModelName} />
                 </div>
                 <div className="model_list-item-section">
-
-                {selectSection}
-
+                    {selectSection}
+                </div>
+                <div className="model_list-item-stage">
+                    {selectStage}
                 </div>
                 <div className="model_list-item-control">
                     <button type="button" className="btn btn-outline-success" onClick={this.addModelMethod}>add</button>
@@ -195,7 +235,9 @@ class models extends React.Component {
                     {models}
                     {addModel}
                 </div>
+
             </div>
+
         )
 
     }

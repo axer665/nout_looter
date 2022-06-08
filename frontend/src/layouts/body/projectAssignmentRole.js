@@ -47,6 +47,7 @@ class projectAssignment extends React.Component {
             value : null,
             valueText : null,
             defaultValue : null,
+            defaultId : null,
 
             edit : this.props.edit,
 
@@ -64,6 +65,7 @@ class projectAssignment extends React.Component {
                 value : this.state.role.name,
                 valueText : this.state.role.name,
                 defaultValue : this.state.role.name,
+                defaultId : this.state.role.id,
             })
         }
 
@@ -78,7 +80,7 @@ class projectAssignment extends React.Component {
             role : this.state.role
         }
         this.props.sendData(returnRole)
-        //console.log(this.props.availableRoles)
+
     }
 
     componentWillUnmount() {
@@ -131,6 +133,8 @@ class projectAssignment extends React.Component {
         let statusKey = event.target.value
         let statusValue
 
+        //this.props.returnAssignment(this.state.role)
+
         for (const [key, value] of Object.entries(this.state.roles)) {
             if (value.id == statusKey){
                 statusValue = value.name
@@ -152,9 +156,12 @@ class projectAssignment extends React.Component {
         let returnRole = {
             key : this.props.number,
             role : this.state.role,
-            trigger : 'selectRole'
+            trigger : 'selectRole',
+            firstRole : this.state.defaultId
         }
         this.props.sendData(returnRole)
+        //console.log('current roles : ')
+        //console.log(this.state)
     }
 
 

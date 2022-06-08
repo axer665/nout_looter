@@ -67,6 +67,9 @@ class projectAssignmentAddRole extends React.Component {
     select = (event) => {
         console.log(event.target.value)
         console.log(this.state.roles)
+
+
+
         let currentRole =  this.state.roles.find(role => role.id == event.target.value)
 
         this.setState({
@@ -79,6 +82,7 @@ class projectAssignmentAddRole extends React.Component {
             myRole : this.state.roleObj,
         }
         this.props.sendData(returnRole)
+        //this.props.returnAssignment(this.state.role)
     }
 
     editOk = () => {

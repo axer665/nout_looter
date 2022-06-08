@@ -44,7 +44,7 @@ class projectParticipants extends React.Component {
         if (this.state.isLoadingData !== null){
 
             let assignments = this.state.users.map((user, key)=> {
-                return ( <ProjectAssignment key={key} assignment={user} roles={this.state.roles} />)
+                return ( <ProjectAssignment key={key} assignment={user} roles={this.state.roles} copyRoles={this.state.roles} />)
             })
 
             let headers = (

@@ -273,11 +273,15 @@
 
   .model_list-name_header {
     text-align: center;
-    width: 45%;
+    width: 40%;
   }
   .model_list-section_header{
     text-align: center;
-    width: 55%;
+    width: 30%;
+  }
+  .model_list-stage_header{
+    text-align: center;
+    width: 30%;
   }
 }
 
@@ -308,10 +312,13 @@
 
 .model_list-items{
   .model_list-item-name{
-    width: 45%;
+    width: 40%;
   }
   .model_list-item-section{
-    width: calc(55% - 100px);
+    width: 30%;
+  }
+  .model_list-item-stage{
+    width: calc(30% - 100px);
   }
   .model_list-item-control{
     width: 100px;
