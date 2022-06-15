@@ -15,6 +15,7 @@ import Store from 'store'
 import ApiAuth from './../api/Authorisation'
 import ApiUser from './../api/User'
 
+import Projects from './body/projects.js'
 import Project from './body/project.js'
 import Object from './body/object.js'
 import AuthenticationUser from './body/Auth/authentication'
@@ -36,6 +37,7 @@ class masterLayout extends React.Component {
        this.state = {
             user : {},
             body : props.body,
+            parameters : {},
             isLoadingUserdata: false,
             rerenderKey : 0,
             informers : [],
@@ -73,10 +75,11 @@ class masterLayout extends React.Component {
         })
         .catch(error => {
             console.log(error.response)
-            if (error.response.data.result === false){
-                //document.location.href="/projects";
-                Store.remove('user')
-            }
+            if (error.response)
+                if (error.response.data.result === false){
+                    //document.location.href="/projects";
+                    Store.remove('user')
+                }
             this.setState({
                 isLoadingUserdata : true
             })
@@ -101,7 +104,7 @@ class masterLayout extends React.Component {
         head = <Header user={this.state.user} />
         switch (this.state.body) {
           case "projects":
-            body = <Body content={this.state.body} user={this.state.user} />
+            body = <Projects content={this.state.body} user={this.state.user} />
             break;
           case "project":
             body = <Project user={this.state.user} />

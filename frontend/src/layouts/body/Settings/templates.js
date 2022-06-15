@@ -117,12 +117,13 @@ class settingsTemplates extends React.Component {
     render(){
             let templates = this.state.templates.map((template, key)=>{
                 return (
-                        <Template key={key+'-'+this.state.templatesKey}
-                                    template={template}
-                                    stages={this.state.stages}
-                                    sections={this.state.sections}
-                                    objectTypes={this.state.objectTypes}
-                                    updateTemplates={this.getTemplates}/>
+                            <Template key={key+'-'+this.state.templatesKey}
+                                        template={template}
+                                        stages={this.state.stages}
+                                        sections={this.state.sections}
+                                        objectTypes={this.state.objectTypes}
+                                        updateTemplates={this.getTemplates}/>
+
                        )
             })
 
@@ -233,7 +234,9 @@ class settingsTemplates extends React.Component {
                 <div className="container-templates cl-w80">
                     {settingsMenu}
                     {header}
-                    {templates}
+                    <div className="block-settings-templates-list">
+                        {templates}
+                    </div>
                     {addTemplate}
                 </div>
             )

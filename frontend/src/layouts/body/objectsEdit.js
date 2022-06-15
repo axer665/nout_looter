@@ -154,6 +154,7 @@ class body extends React.Component {
 
                 {header}
 
+                <div className="block-objects-list">
                 {
                     this.state.objects.items.map( item => {
                         let objectType = "<Не выбрано>"
@@ -180,6 +181,7 @@ class body extends React.Component {
                         )
                     })
                 }
+                </div>
             </div>
         )
 

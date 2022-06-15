@@ -1,36 +1,25 @@
-import React from 'react'
+import React, { useState } from 'react'
 import ApiProj from './../../api/Projects'
 import Axios from 'axios'
 import {Link} from 'react-router-dom'
+import { Routes, Route, useParams } from 'react-router-dom';
 
 import './../style/body.scss';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCoffee, faPen } from '@fortawesome/free-solid-svg-icons'
+import Body from './../body'
 
-import Informer from './../../components/informer/main'
+const Projects = (props) => {
+    const [connect, setConnect] = useState(0);
 
-class projects extends React.Component {
-    constructor(props) {
-      super(props)
-      console.log(props)
-    }
+    const params = useParams()
+    const projType = params.type
 
-   componentDidMount() {
-   }
+    return (
+        <Body content={props.content} key={projType} type={projType} user={props.user} />
+    )
 
-   componentWillUnmount() {
-   }
-
-    render(){
-
-
-
-        return (
-
-             <div> test {this.props.number} </div>
-
-        )
-    }
 }
 
-export default projects
+
+export default Projects

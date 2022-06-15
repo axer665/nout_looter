@@ -156,26 +156,67 @@ class projectAssignment extends React.Component {
 
         let arrRoles = []
 
-        this.state.selectedRoles.filter((roleId, key) => {
+        /*this.state.selectedRoles.filter((roleId, key) => {
             if (roleId == event.id && key == event.key){
                 arrRoles.push(Number(event.value))
             } else {
                 arrRoles.push(roleId)
             }
+        })*/
+        let newAllSelectedRoles = []
+        this.state.allSelectedRoles.filter((role, id) => {
+            if (role.key == event.key){
+                let newRole = {
+                    'key' : event.key,
+                    'role' : {
+                        'id' : Number(event.value),
+                        'name' : event.short_name
+                    },
+                }
+                newAllSelectedRoles.push(newRole)
+            } else {
+                newAllSelectedRoles.push(role)
+            }
         })
 
-        let test = this.state.selectRoles.filter(role => {
+        let test = []
+        this.state.selectRoles.filter(role => {
+            let newRole = {}
             if (role.id == event.id){
-                role.id = Number(event.value)
-                role.name = event.short_name
+                newRole.id = Number(event.value)
+                newRole.name = event.short_name
+                test.push(newRole)
+            } else {
+                test.push(role)
             }
-            return role
+        })
+
+        let newAvailableRoles = []
+        let availableRolesArr = []
+        this.state.availableRoles.filter(role => {
+            availableRolesArr.push(role.id)
+        })
+        let idIndex = availableRolesArr.indexOf(event.id);
+        let numberIndex = availableRolesArr.indexOf(Number(event.value));
+        if (idIndex === -1){
+            availableRolesArr.push(event.id)
+        }
+        if (numberIndex !== -1){
+            availableRolesArr.splice(numberIndex, 1);
+        }
+        this.state.roles.filter(role => {
+            if (availableRolesArr.includes(role.id)){
+                newAvailableRoles.push(role)
+            }
         })
 
         this.setState({
-            selectedRoles : arrRoles,
-            selectRoles : test
+            //selectedRoles : arrRoles,
+            selectRoles : test,
+            allSelectedRoles: newAllSelectedRoles,
+            availableRoles : newAvailableRoles,
         })
+
 
     }
 
@@ -252,9 +293,9 @@ class projectAssignment extends React.Component {
     }
 
     addRole = () => {
-        console.log(this.state.addRoles)
-        console.log(this.state.availableRoles)
-        console.log(this.state.roles)
+        //console.log(this.state.addRoles)
+        //console.log(this.state.availableRoles)
+        //console.log(this.state.roles)
 
         //let newRole = this.state.addRoles
 
@@ -268,10 +309,10 @@ class projectAssignment extends React.Component {
                 availableRoles : availableRoles,
                 selectRoles : newSelectRoles
             })
-            console.log('newSelectRoles : ')
-            console.log(newSelectRoles)
-            console.log('availableRoles : ')
-            console.log(availableRoles)
+            //console.log('newSelectRoles : ')
+            //console.log(newSelectRoles)
+            //console.log('availableRoles : ')
+            //console.log(availableRoles)
         }
 
 
@@ -376,7 +417,7 @@ class projectAssignment extends React.Component {
         //console.log('availableRoles')
         //console.log(availableRoles)
         this.setState({
-            availableRoles : availableRoles,
+            //availableRoles : availableRoles,
         })
 
         //console.log('ROLES : ')
@@ -409,19 +450,19 @@ class projectAssignment extends React.Component {
         console.log(this.state.availableRoles)*/
 
         if (event.trigger == "selectRole"){
-            console.log('IDS : ')
-            console.log(selectedRolesIds)
+            //console.log('IDS : ')
+            //console.log(selectedRolesIds)
 
-            console.log('EVENT : ')
-            console.log(event)
+            //console.log('EVENT : ')
+            //console.log(event)
 
             this.setState({
                 localKey : this.state.localKey+1
             })
-            console.log('selected role : ')
-            console.log(event)
-            console.log('available roles : ')
-            console.log(availableRoles)
+            //console.log('selected role : ')
+            //console.log(event)
+            //console.log('available roles : ')
+            //console.log(availableRoles)
 
             if (event.firstRole){
                 let availableRolesIds = []
@@ -433,9 +474,9 @@ class projectAssignment extends React.Component {
                 if (!availableRolesIds.includes(event.firstRole)){
                     //let newAvailableRole = this.props.roles.find(role=>role.id==event.firstRole)
                     //console.log(newAvailableRole)
-                    console.log(this.props.roles)
-                    console.log(this.state.originalRoles)
-                    console.log(this.props.copyRoles)
+                    //console.log(this.props.roles)
+                    //console.log(this.state.originalRoles)
+                    //console.log(this.props.copyRoles)
                 }
             }
         }

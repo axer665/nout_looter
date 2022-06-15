@@ -138,6 +138,7 @@ class models extends React.Component {
         let models = (
             <div>
                 {header}
+                <div className="block-models-list">
                 {
                     this.state.models.map( model => {
                         let modelSection = "<Не выбрано>"
@@ -172,6 +173,7 @@ class models extends React.Component {
                         )
                     })
                 }
+                </div>
             </div>
         )
 

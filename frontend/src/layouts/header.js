@@ -24,7 +24,7 @@ const MYheader = (props) => {
     const [projectInfo, resultProjectData] = useState(null);
     const params = useParams()
 
-    console.log(props)
+    //console.log(props)
 
     if (props.head == "project"){
         const projectId = params.projId
@@ -93,13 +93,19 @@ const MYheader = (props) => {
         projectMenu = (
             <>
                 <li>
-                    <img src={MenuManufacture} />
+                    <Link to={"/projects/3"}>
+                        <img src={MenuManufacture} />
+                    </Link>
                 </li>
                 <li>
-                    <img src={MenuTrain} />
+                    <Link to={"/projects/1"}>
+                        <img src={MenuTrain} />
+                    </Link>
                 </li>
                 <li>
-                    <img src={MenuRoad} />
+                    <Link to={"/projects/2"}>
+                        <img src={MenuRoad} />
+                    </Link>
                 </li>
             </>
         )
@@ -115,11 +121,11 @@ const MYheader = (props) => {
 
         <div className="row align-items-center">
             <div className="col">
-                <a href="#" rel="home">
+                <Link to={"/projects/all"}>
                     <picture>
                     <img alt="Мосинжпроект" src="https://mosinzhproekt.ru/wp-content/themes/mosinzh/static/img/main-logo-ru-306x48-c-default.png"/>
                     </picture>
-                </a>
+                </Link>
                 <div className="text-xs uppercase text-blue-100 leading-none pl-12">
                     СТРОИМ НАСТОЯЩЕЕ, СОЗДАЕМ БУДУЩEЕ!
                 </div>
@@ -129,7 +135,7 @@ const MYheader = (props) => {
                 <ul className="menu-main">
                     {mainMenu}
                     <li className="with_separator">
-                        <Link to={"/projects"}>
+                        <Link to={"/projects/all"}>
                             <p> ПРОЕКТЫ </p>
                         </Link>
                     </li>

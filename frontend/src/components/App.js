@@ -106,7 +106,7 @@ class App extends Component {
                             element={<MasterLayout body="start" user={user} />}
                          />
 
-                        <Route path="/projects" element={<MasterLayout key='projects' body='projects' user={this.state.user} checkToken={this.state.checkToken} />} />
+                        <Route path="/projects/:type" element={<MasterLayout key='projects' body='projects' user={this.state.user} checkToken={this.state.checkToken} />} />
                         <Route path="/project/:id/:trigger" element={<MasterLayout key='project' body='project' user={this.state.user} checkToken={this.state.checkToken} />} >
                         </Route>
 

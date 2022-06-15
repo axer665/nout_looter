@@ -52,6 +52,8 @@ class projectAssignment extends React.Component {
             edit : this.props.edit,
 
             selectedRoles : this.props.selectedRoles,
+
+            localKey : 1,
         }
     }
 
@@ -114,7 +116,10 @@ class projectAssignment extends React.Component {
                 selected
             )
         })
-        select = <select defaultValue={defaultValue} onChange={this.select}> {options} </select>
+
+        let localKey = this.state.localKey+1+Math.random()
+
+        select = <select key={localKey} defaultValue={defaultValue} onChange={this.select}> {options} </select>
 
         this.setState({
             value : select,

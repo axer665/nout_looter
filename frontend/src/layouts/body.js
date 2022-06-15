@@ -21,6 +21,7 @@ class body extends React.Component {
             user : props.user,
             projects : {
                 items : [],
+                type : this.props.type,
                 newProjectCode: '',
                 newProjectName: '',
                 isLoadingProjects: false,
@@ -56,7 +57,13 @@ class body extends React.Component {
 
 
     getProjects(){
-        ApiProj.getProjects()
+        let type
+        if (this.state.projects.type == "all"){
+            type = null
+        } else {
+            type = this.state.projects.type
+        }
+        ApiProj.getProjects({'project_type_id' : type})
         .then(response => {
             this.setState(prevState => {
                       let projects = Object.assign({}, prevState.projects);
@@ -166,7 +173,7 @@ class body extends React.Component {
 
         let projectControl
         let projects = (
-            <div className="container-projects-list" >
+            <div className="container-projects-list block-projects-list" >
                 {
                     this.state.projects.items.map( item => {
                         projectControl = ""

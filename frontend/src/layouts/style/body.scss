@@ -98,6 +98,7 @@
   .project_list-code_header{
     border-right: 2px solid #969bb5;
   }
+  width: calc(100% - 15px);
 }
 
 .table-blue{
@@ -976,4 +977,20 @@
     background-color: #9e8949;
     transition: all 400ms;
   }
+}
+
+
+
+
+.block-projects-list,
+.block-objects-list,
+.block-models-list,
+.block-settings-templates-list,
+.template_criterions_list-items,
+.table-project_objects>tbody,
+.block-project-models-list{
+  overflow-y: scroll;
+  max-height: 400px;
+  min-height: 100px;
+  border: 1px solid #cecece;
 }
