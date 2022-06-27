@@ -29,7 +29,7 @@ class settingsStage extends React.Component {
     newName = (event) => {
         this.setState({
             nameText : event.target.value,
-            shortName : <input type="text" defaultValue={event.target.value} onChange={this.newVersion} />
+            shortName : <input type="text" defaultValue={event.target.value} onChange={this.newName} />
         })
     }
 
@@ -53,6 +53,32 @@ class settingsStage extends React.Component {
         })
     }
 
+    editOk = () => {
+        const data = {
+           'name' : this.state.nameText,
+           'short_name' : this.state.shortNameText,
+        }
+
+        const headers = ApiSettings.getHeaders()
+
+        Axios.put('http://192.168.2.119:84/api/updateSettingsStage/'+this.state.stage.id, data, {
+            headers: headers
+        })
+        .then((response) => {
+            console.log(response.data)
+            this.setState({
+                name : this.state.nameText,
+                shortName : this.state.shortNameText,
+                control : (
+                    <span>
+                        <button type="button" className="btn btn-outline-secondary" onClick={this.editStage}><FontAwesomeIcon icon={faPen} /></button>
+                        <button type="button" className="btn btn-outline-danger" onClick={this.deleteStage}><FontAwesomeIcon icon={faTrash} /></button>
+                    </span>
+                )
+            })
+        })
+    }
+
     editCancel = () => {
         this.setState({
             name : this.state.defaultName,
@@ -60,9 +86,22 @@ class settingsStage extends React.Component {
             control : (
                 <span>
                     <button type="button" className="btn btn-outline-secondary" onClick={this.editStage}><FontAwesomeIcon icon={faPen} /></button>
-                    <button type="button" className="btn btn-outline-danger"><FontAwesomeIcon icon={faTrash} /></button>
+                    <button type="button" className="btn btn-outline-danger" onClick={this.deleteStage}><FontAwesomeIcon icon={faTrash} /></button>
                 </span>
             )
+        })
+    }
+
+    deleteStage = () => {
+        const data = {
+            id: this.state.stage.id
+        }
+        const headers = ApiSettings.getHeaders()
+
+        Axios.delete('http://192.168.2.119:84/api/settingsStage/'+data.id, {headers : headers, data : data})
+        .then((response) => {
+        console.log(response.data)
+            this.props.getStages()
         })
     }
 
@@ -71,7 +110,7 @@ class settingsStage extends React.Component {
             control : (
                 <span>
                     <button type="button" className="btn btn-outline-secondary" onClick={this.editStage}><FontAwesomeIcon icon={faPen} /></button>
-                    <button type="button" className="btn btn-outline-danger"><FontAwesomeIcon icon={faTrash} /></button>
+                    <button type="button" className="btn btn-outline-danger" onClick={this.deleteStage}><FontAwesomeIcon icon={faTrash} /></button>
                 </span>
             )
         })

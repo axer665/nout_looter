@@ -5,11 +5,12 @@ import Axios from 'axios'
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd'
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faPen } from '@fortawesome/free-solid-svg-icons'
+import { faPen, faList, faTrash, faCheck, faXmark } from '@fortawesome/free-solid-svg-icons'
 
 import Informer from './../../../components/informer/main'
 import ApiSettings from './../../../api/Settings'
 import Dropzone from "./../../../components/DnD/dropzone"
+import NewCriterion from './../../../components/modals/newCriterion'
 
 import Gear from './../../../../src/images/menu/gear.png'
 
@@ -17,6 +18,7 @@ var connect = 0
 
 const Project = (props) => {
     const [connect, setConnect] = useState(0);
+    //const [deletedCriterion, setConnect] = useState(0);
     const [newTemplateCriterionName, setNewTemplateCriterionname] = useState('')
     const [criterions, updateCriterions] = useState(null)
 
@@ -36,12 +38,11 @@ const Project = (props) => {
         const data = {
             items : items
         }
-        Axios.post('http://192.168.160.62:84/api/settingsSortedTemplateCriterions', data, {
+        Axios.post('http://192.168.2.119:84/api/settingsSortedTemplateCriterions', data, {
             headers: headers
         })
         .then((response) => {
             console.log(response.data)
-            //this.getObjects()
         })
     }
 
@@ -50,16 +51,16 @@ const Project = (props) => {
         setNewTemplateCriterionname(event.target.value)
     }
 
-    const addNewTemplateCriterion = () => {
+    const addNewTemplateCriterion = (event) => {
         //console.log(newTemplateCriterionName)
-        if (newTemplateCriterionName){
+        if (event.name){
             const headers = ApiSettings.getHeaders()
             const data = {
                 template_id : templateId,
-                name : newTemplateCriterionName,
+                name : event.name,
                 order : criterions.length * 100 + 100
             }
-            Axios.post('http://192.168.160.62:84/api/createTemplateCriterion', data, {
+            Axios.post('http://192.168.2.119:84/api/createTemplateCriterion', data, {
                 headers: headers
             })
             .then((response) => {
@@ -69,6 +70,29 @@ const Project = (props) => {
         } else {
             console.log('newTemplateCriterionName is null')
         }
+    }
+
+    const deleteCriterion = (event) => {
+        console.log(event)
+        const headers = ApiSettings.getHeaders()
+        const data = {
+            id: event
+        }
+
+
+        Axios.delete('http://192.168.2.119:84/api/delete/templateCriterion/'+event, {headers : headers, data : data})
+        .then((response) => {
+            console.log(response.data)
+
+            let deleteIndex
+            criterions.filter((criterion, index) => {
+                if (criterion.id == data.id){
+                    deleteIndex = index
+                }
+            })
+            criterions.splice(deleteIndex, 1)
+            setConnect(criterions.length)
+        })
     }
 
     if (!criterions){
@@ -97,19 +121,7 @@ const Project = (props) => {
         )
 
         let addTemplateCriterion = (
-            <div className="template_criterions_list-add">
-                <div className="d-flex flex-row bd-highlight mb-3 justify-content-center template_criterions_list-item">
-                    <div className="template_criterions_list-number">
-
-                    </div>
-                    <div className="template_criterions_list-name">
-                        <input type="text" defaultValue={newTemplateCriterionName} onChange={editNewTemplateCriterionName} />
-                    </div>
-                    <div className="template_criterions_list-control">
-                        <button type="button" className="btn btn-outline-success" onClick={addNewTemplateCriterion}>add</button>
-                    </div>
-                </div>
-            </div>
+            <NewCriterion addCriterion={addNewTemplateCriterion} />
         )
 
         let MainBlock = "col-12",
@@ -123,7 +135,7 @@ const Project = (props) => {
             SideBarBlock = "col-2"
             Container = "container-fluid h-100"
         }
-
+        console.log(criterions)
         let mainContent = (
             <div className="container-templates cl-w80">
                 <div className="container-lists-template_criterions">
@@ -143,6 +155,9 @@ const Project = (props) => {
                                       </div>
                                       <div className="template_criterions_list-name">
                                         { name }
+                                      </div>
+                                      <div className="template_criterions_list-control">
+                                         <button type="button" className="btn btn-outline-danger" data-id={id} onClick={(index) => {deleteCriterion(id)}}><FontAwesomeIcon icon={faTrash} /></button>
                                       </div>
                                     </div>
                                   )}

@@ -106,7 +106,7 @@ const MYCheckList = (props) => {
                 'checkListId' : checkListId,
                 'projectId' : projectId
             }
-            Axios.post('http://192.168.160.62:84/api/confirmCriteria', data, {
+            Axios.post('http://192.168.2.119:84/api/confirmCriteria', data, {
                 headers: headers
             })
             .then((response) => {
@@ -124,7 +124,7 @@ const MYCheckList = (props) => {
         }
         let buttons = (
             <div className="check_lists-header-buttons">
-                <button type="button" className="btn btn-primary" onClick={checkCheck} >{buttonText}</button>
+                {/*<button type="button" className="btn btn-primary" onClick={checkCheck} >{buttonText}</button>*/}
                 <button type="button" className="btn btn-primary" onClick={sendReport}>Отправить</button>
             </div>
         )
@@ -153,7 +153,7 @@ const MYCheckList = (props) => {
             })
             const headers = ApiCheckLists.getHeaders()
             let data = {paramName : 'criterion_value', paramValue : props.value}
-            Axios.put('http://192.168.160.62:84/api/updateCLCriterion/'+props.id, data, {
+            Axios.put('http://192.168.2.119:84/api/updateCLCriterion/'+props.id, data, {
                 headers: headers
             })
             .then((response) => {
@@ -174,7 +174,7 @@ const MYCheckList = (props) => {
                 } else {
                     const headers = ApiCheckLists.getHeaders()
                     let data = {paramName : 'footnote', paramValue : props.value}
-                    Axios.put('http://192.168.160.62:84/api/updateCLCriterion/'+props.id, data, {
+                    Axios.put('http://192.168.2.119:84/api/updateCLCriterion/'+props.id, data, {
                         headers: headers
                     })
                     .then((response) => {
@@ -200,11 +200,11 @@ const MYCheckList = (props) => {
         }
 
         let criteriaListClass
-        if (!enableCheckList){
-            criteriaListClass = "container-check_lists disabled"
-        } else {
+        //if (!enableCheckList){
+        //    criteriaListClass = "container-check_lists disabled"
+        //} else {
             criteriaListClass = "container-check_lists"
-        }
+        //}
 
 
         let criteriaCount = 0

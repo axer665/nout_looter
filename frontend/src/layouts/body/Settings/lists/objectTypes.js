@@ -7,6 +7,7 @@ import { faPen } from '@fortawesome/free-solid-svg-icons'
 
 import ApiSettings from './../../../../api/Settings'
 import ObjectType from './objectType'
+import NewObjectType from './../../../../components/modals/newObjectType'
 
 class settingsObjectTypes extends React.Component {
     constructor(props) {
@@ -24,11 +25,31 @@ class settingsObjectTypes extends React.Component {
 
     }
 
+    newObjectType = (event) => {
+        console.log(event)
+        const data = {
+            'name': event.name,
+        }
+
+        const headers = ApiSettings.getHeaders()
+        Axios.post('http://192.168.2.119:84/api/newSettingsObjectType', data, {
+            headers: headers
+        })
+        .then((response) => {
+            console.log(response.data)
+            this.rerender()
+        })
+    }
+
+    rerender = () => {
+        this.props.getObjectTypes()
+    }
+
     render(){
 
             let header = (
                 <div className="d-flex flex-row bd-highlight mb-3 justify-content-center container-lists-header">
-                    <div className="s_sections_list-item-name_header">
+                    <div className="s_object_types_list-item-name_header">
                         Наименование
                     </div>
                 </div>
@@ -37,13 +58,19 @@ class settingsObjectTypes extends React.Component {
             let types
             if (this.state.types)
                 types = this.state.types.map((type, key) => {
-                    return (<ObjectType key={key} type={type} />)
+                    return (<ObjectType key={key} getObjectTypes={this.rerender} type={type} />)
                 })
+            let addSection = (
+                    <NewObjectType addObjectType={this.newObjectType} />
+                )
 
             return (
-                <div className="container-settings-lists-sections">
+                <div className="container-settings-lists-object_types">
                     {header}
-                    {types}
+                    <div className="block-settings-lists-object_types">
+                        {types}
+                    </div>
+                    {addSection}
                 </div>
             )
     }

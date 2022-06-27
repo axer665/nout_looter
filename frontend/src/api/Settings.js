@@ -16,7 +16,7 @@ let config = {
     "Content-Type": "application/json",
      Authorization: "Bearer " + token,
   },
-  baseURL : 'http://192.168.160.62:84/api/',
+  baseURL : 'http://192.168.2.119:84/api/',
   params : {}
 };
 

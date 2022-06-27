@@ -9,6 +9,7 @@ import { faCoffee, faPen } from '@fortawesome/free-solid-svg-icons'
 import Informer from './../../components/informer/main'
 import ApiModel from './../../api/Models'
 import DeleteModelModal from './../../components/modals/confirmDeleteModel'
+import NewModel from './../../components/modals/newModel'
 
 class models extends React.Component {
     constructor(props) {
@@ -79,30 +80,30 @@ class models extends React.Component {
         this.setState({informers:messageArray})
     }
 
-    addModelMethod = () => {
+    addModelMethod = (event) => {
         const data = {
-            section_id: this.state.selectedSection,
-            stage_id: this.state.selectedStage,
-            name: this.state.newModelName,
+            section_id: event.section,
+            stage_id: event.stage,
+            name: event.name,
             object_id: this.props.objectId,
         }
 
-        if (!data.section_id){
+        /*if (!data.section_id){
             this.addInformer('Вы не выбрали раздел проекта для создаваемой модели')
         } else if (!data.stage_id) {
             this.addInformer('Вы не выбрали стадию проекта для создаваемой модели')
         } else if (!data.name) {
             this.addInformer('Укажите наименование создаваемой модели')
-        } else {
+        } else {*/
             const headers = ApiModel.getHeaders()
-            Axios.post('http://192.168.160.62:84/api/model', data, {
+            Axios.post('http://192.168.2.119:84/api/model', data, {
                 headers: headers
             })
             .then((response) => {
                 console.log(response.data)
                 this.getModels()
             })
-        }
+        //}
     }
 
     deleteModel = (modelId) => {
@@ -111,7 +112,7 @@ class models extends React.Component {
         }
         const headers = ApiModel.getHeaders()
 
-        Axios.delete('http://192.168.160.62:84/api/model/'+modelId, {headers : headers, data : data})
+        Axios.delete('http://192.168.2.119:84/api/model/'+modelId, {headers : headers, data : data})
         .then((response) => {
             console.log(response.data)
             this.getModels()
@@ -208,27 +209,7 @@ class models extends React.Component {
         )
 
         let addModel = (
-            <div className="d-flex flex-row bd-highlight mb-3 model_list-items justify-content-center">
-
-                <div className="model_list-item-name">
-                    <input type="text" value={this.state.newModelName} onChange={this.newModelName} />
-                </div>
-                <div className="model_list-item-section">
-                    {selectSection}
-                </div>
-                <div className="model_list-item-stage">
-                    {selectStage}
-                </div>
-                <div className="model_list-item-control">
-                    <button type="button" className="btn btn-outline-success" onClick={this.addModelMethod}>add</button>
-                </div>
-
-                {this.state.informers.map(
-                    (informer, key) => {
-                        return (<Informer key={key} message={informer} updateStatus={this.updateStatus} />)
-                    }
-                )}
-            </div>
+            <NewModel addModel={this.addModelMethod} stageOptions={selectStageOption} sectionOptions={selectSectionOptions} />
         )
 
         return (

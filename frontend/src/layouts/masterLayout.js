@@ -30,6 +30,8 @@ import SettingsTemplates from './body/Settings/templates'
 import SettingsRoles from './body/Settings/roles'
 import SettingsLists from './body/Settings/lists'
 
+import Reports from './body/reports'
+
 class masterLayout extends React.Component {
 
     constructor(props) {
@@ -106,7 +108,11 @@ class masterLayout extends React.Component {
           case "projects":
             body = <Projects content={this.state.body} user={this.state.user} />
             break;
+          case "reports":
+            body = <Reports />
+            break;
           case "project":
+            head = <Header head="project" user={this.state.user} />
             body = <Project user={this.state.user} />
             break;
           case "object":

@@ -51,7 +51,7 @@ class projectInfo extends React.Component {
             'user_id' : this.state.user.id,
             'project_id' : this.props.projectData.id
         }
-        Axios.post('http://192.168.160.62:84/api/joinUserInProject', data, {
+        Axios.post('http://192.168.2.119:84/api/joinUserInProject', data, {
             headers: headers
         })
         .then((response) => {

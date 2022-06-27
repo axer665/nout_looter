@@ -36,7 +36,7 @@ class User extends React.Component {
             this.setState({
                 logOut : true
             })
-            document.location.href="/projects";
+            document.location.href="/projects/all";
         })
 
     }
@@ -46,17 +46,101 @@ class User extends React.Component {
         //if (this.state.logOut){
         //    logOut = <Navigate replace to="/projects" />
         //}
-        console.log(this.props)
+        //console.log(this.props)
+        let MainBlock = "col-12",
+            SideBarBlock, sideBar, IndentLeft, IndentRight,
+            Container = "container"
+
+        if (sideBar){
+            MainBlock = "col-8"
+            IndentLeft = "col-1"
+            IndentRight = "col-1"
+            SideBarBlock = "col-2"
+            Container = "container-fluid"
+        }
+
+        console.log(this.props.user)
+
         return(
-            <div>
-                {this.props.user.id}
-                <br/>
-                {this.props.user.login}
-                <br/>
-                <button onClick={this.logOut}>
-                    Выход
-                </button>
-                {logOut}
+
+            <div className={Container}>
+                <div className="row">
+                    <div className={IndentLeft}>
+                    </div>
+                    <div className={SideBarBlock}>
+                        {sideBar}
+                    </div>
+                    <div className={MainBlock}>
+                        <div className="container-user cl-w80">
+                            <table className="table-user_data">
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            Логин
+                                        </td>
+                                        <td>
+                                            {this.props.user.login}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            Фамилия
+                                        </td>
+                                        <td>
+                                            {this.props.user.first_name}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            Имя
+                                        </td>
+                                        <td>
+                                            {this.props.user.last_name}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            Отчество
+                                        </td>
+                                        <td>
+                                            {this.props.user.patronymic}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            E-mail
+                                        </td>
+                                        <td>
+                                            {this.props.user.email}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            Компания
+                                        </td>
+                                        <td>
+                                            {this.props.user.company}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            Должность
+                                        </td>
+                                        <td>
+                                            {this.props.user.function}
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <button type="button" className="btn btn-danger" onClick={this.logOut}>
+                                Выход
+                            </button>
+                            {logOut}
+                        </div>
+                    </div>
+                    <div className={IndentRight}>
+                    </div>
+                </div>
             </div>
         )
 

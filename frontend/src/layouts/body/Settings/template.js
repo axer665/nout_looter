@@ -133,7 +133,7 @@ class settingsTemplates extends React.Component {
         const headers = ApiSettings.getHeaders()
 
         console.log(event.target.checked)
-        Axios.put('http://192.168.160.62:84/api/updateSettingsTemplate/'+this.props.template.id, data, {
+        Axios.put('http://192.168.2.119:84/api/updateSettingsTemplate/'+this.props.template.id, data, {
             headers: headers
         })
         .then((response) => {
@@ -151,7 +151,7 @@ class settingsTemplates extends React.Component {
             }
         const headers = ApiSettings.getHeaders()
 
-        Axios.put('http://192.168.160.62:84/api/updateSettingsTemplate/'+this.props.template.id, data, {
+        Axios.put('http://192.168.2.119:84/api/updateSettingsTemplate/'+this.props.template.id, data, {
             headers: headers
         })
         .then((response) => {
@@ -243,7 +243,7 @@ class settingsTemplates extends React.Component {
         let data = {
             'templateId' : templateId,
         }
-        Axios.post('http://192.168.160.62:84/api/createTemplateVersion', data, {
+        Axios.post('http://192.168.2.119:84/api/createTemplateVersion', data, {
             headers: headers
         })
         .then((response) => {

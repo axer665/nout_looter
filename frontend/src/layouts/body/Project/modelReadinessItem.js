@@ -86,7 +86,7 @@ class modelReadinessItem extends React.Component {
 
 
             const headers = ApiModel.getHeaders()
-            Axios.post('http://192.168.160.62:84/api/createCheckList', data, {
+            Axios.post('http://192.168.2.119:84/api/createCheckList', data, {
                 headers: headers
             })
             .then((response) => {

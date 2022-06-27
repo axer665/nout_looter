@@ -10,6 +10,7 @@ import { faCoffee, faPen, faPlus, faTrashCan } from '@fortawesome/free-solid-svg
 
 import Informer from './../components/informer/main'
 import InfoModal from './../components/modals/infoModal'
+import NewProject from './../components/modals/newProject'
 import ApiProj from './../api/Projects'
 
 class body extends React.Component {
@@ -73,10 +74,10 @@ class body extends React.Component {
         })
     }
 
-    addProjectMethod = () => {
+    addProjectMethod = (event) => {
         const data = {
-            code: this.state.projects.newProjectCode,
-            name: this.state.projects.newProjectName,
+            code: event.code,
+            name: event.name,
         }
 
         const headers = {
@@ -84,19 +85,19 @@ class body extends React.Component {
             Authorization: "Bearer " + "4|lYkjKOIEawdFpsIuc9c3fUY6wpQBwKlCEV3uOo03"
         }
 
-        if (!data.code){
-            this.addInformer('error 1')
-        } else if (!data.name) {
-            this.addInformer('error 2')
-        } else {
-            Axios.post('http://192.168.160.62:84/api/project', data, {
+        //if (!data.code){
+        //    this.addInformer('error 1')
+        //} else if (!data.name) {
+        //    this.addInformer('error 2')
+        //} else {
+            Axios.post('http://192.168.2.119:84/api/project', data, {
                         headers: headers
                       })
                       .then((response) => {
                             //console.log(response.data)
                             this.getProjects()
                       })
-        }
+        //}
     }
 
    componentDidMount() {
@@ -140,7 +141,7 @@ class body extends React.Component {
             Authorization: "Bearer " + "4|lYkjKOIEawdFpsIuc9c3fUY6wpQBwKlCEV3uOo03"
         }
 
-        Axios.delete('http://192.168.160.62:84/api/project/'+projectId, {headers : headers, data : data})
+        Axios.delete('http://192.168.2.119:84/api/project/'+projectId, {headers : headers, data : data})
           .then((response) => {
                 this.getProjects()
           })
@@ -216,7 +217,7 @@ class body extends React.Component {
 
         let addProject
         if (role == 1){
-            addProject = (
+            /*addProject = (
                 <div className="d-flex flex-row bd-highlight mb-3 project_list-items justify-content-center">
 
                     <div className="project_list-code">
@@ -235,6 +236,10 @@ class body extends React.Component {
                         }
                     )}
                 </div>
+            )*/
+            addProject = (
+                <NewProject addProject={this.addProjectMethod} />
+
             )
         }
 

@@ -37,6 +37,18 @@
   color: #007ac1;
 }
 
+.text-blue-dark{
+  color: #002979;
+}
+
+.text-grey{
+  color: #767676;
+}
+
+.text-s20{
+  font-size: 20px;
+}
+
 .container-project-parameters{
   margin-top: 32px;
 }
@@ -74,6 +86,27 @@
 .project_list-control{
   text-align: center;
   width: 100px;
+}
+
+
+// USER
+.container-user{
+  margin-top: 32px;
+  background-color: white;
+  padding: 12px;
+}
+
+.table-user_data{
+  table-layout: fixed;
+  width:100%;
+  border: 1px solid black;
+  margin-bottom: 12px;
+  tr:nth-child(2n+1){
+    background-color: #efefef;
+  }
+  td{
+    padding:3px 6px;
+  }
 }
 
 // CONTAINER LISTS
@@ -690,6 +723,28 @@
   }
 }
 
+
+// REPORTS
+.container-report-main{
+  margin-top:32px;
+  .block-main_report-datepicker{
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: flex-start;
+    margin-bottom: 32px;
+    .react-datepicker-wrapper{
+      width:auto!important;
+      margin-right: 12px;
+    }
+  }
+  [class*="col-"] {
+    margin-bottom: 12px;
+  }
+}
+
+
+
 // CONTAINERS LISTS
 // STAGES
 .container-settings-lists-stages{
@@ -701,6 +756,7 @@
   }
 
   .container-list-settings_stages{
+    margin-bottom: 0!important;
     &>div{
       padding: 4px 8px;
       box-shadow: 0px 0px 1px 0px black;
@@ -712,6 +768,73 @@
       width : calc(40% - 100px);
     }
     .s_stages_list-item-control{
+      width : 100px;
+    }
+  }
+
+}
+
+// SECTIONS
+.container-settings-lists-sections{
+  .s_sections_list-item-name_header{
+    width : 50%;
+  }
+  .s_sections_list-item-short_name_header{
+    width : 50%;
+  }
+  .container-list-settings_sections{
+    margin-bottom: 0!important;
+    &>div{
+      padding: 4px 8px;
+      box-shadow: 0px 0px 1px 0px black;
+    }
+    .s_sections_list-item-name{
+      width : 60%;
+    }
+    .s_sections_list-item-short_name{
+      width : calc(40% - 100px);
+    }
+    .s_sections_list-item-control{
+      width : 100px;
+    }
+  }
+}
+
+// OBJECT TYPES
+.container-settings-lists-object_types{
+  .s_object_types_list-item-name_header{
+    width: 100%;
+  }
+  .container-list-settings_object_types{
+    margin-bottom: 0!important;
+    &>div{
+      padding: 4px 8px;
+      box-shadow: 0px 0px 1px 0px black;
+    }
+    .s_object_types_list-item-name{
+      width : calc(100% - 100px);
+    }
+    .s_object_types_list-item-control{
+      width : 100px;
+    }
+  }
+}
+
+// PROJECT TYPES
+.container-settings-lists-project_types{
+  .s_project_types_list-item-name_header{
+    width: 100%;
+  }
+  .container-list-settings_project_types{
+    margin-bottom: 0!important;
+    &>div{
+      padding: 4px 8px;
+      box-shadow: 0px 0px 1px 0px black;
+    }
+    .s_project_types_list-item-name{
+      width : calc(100% - 100px);
+    }
+    .s_project_types_list-item-control{
       width : 100px;
     }
   }
@@ -832,7 +955,8 @@
   position: relative;
   height: 4px;
   top: 3px;
-  background-color: rgba(0,255,0, 0.3);
+  //background-color: rgba(0,255,0, 0.3);
+  background-color: rgba(0,0,0,0.15)
 }
 
 .horizontal-slider {
@@ -880,7 +1004,7 @@
   height:10px;
   top: 0;
   background: #ffffff;
-  border: 2px solid green;
+  //border: 2px solid green;
   border-radius: 100%;
   display: block;
   box-shadow: 0 0 2px 0 rgb(0 0 0 / 44%);
@@ -926,14 +1050,14 @@
   height:10px;
   top: 0;
   background: #ffffff;
-  border: 2px solid #c5e9c5;
+  border: 2px solid #d1d1d1;
   border-radius: 100%;
   display: block;
   box-shadow: 0 0 2px 0 rgb(0 0 0 / 44%);
   p {
     margin-bottom: 0;
     position: relative;
-    background-color: #c5e9c5;
+    background-color: #d1d1d1;
     display: table;
     padding: 2px 4px 0px 4px;
     top: 15px;
@@ -952,7 +1076,7 @@
       border-right: 10px solid transparent;
       margin-left: -10px;
       left: 50%;
-      border-bottom: 10px solid #c5e9c5;
+      border-bottom: 10px solid #d1d1d1;
       top: -10px;
     }
   }
@@ -986,6 +1110,13 @@
 .block-objects-list,
 .block-models-list,
 .block-settings-templates-list,
+.block-settings-roles,
+.block-settings-lists-stages,
+.block-settings-lists-sections,
+.block-settings-lists-object_types,
+.block-settings-lists-project_types,
+.block-project_assignments,
+.block-project_templates-lists,
 .template_criterions_list-items,
 .table-project_objects>tbody,
 .block-project-models-list{
@@ -993,4 +1124,105 @@
   max-height: 400px;
   min-height: 100px;
   border: 1px solid #cecece;
+}
+
+.block-project-models-filter{
+  margin-top:32px;
+  select{
+    background-color: #5374cb;
+    color: white;
+    padding: 6px;
+    margin-right: 12px;
+    option {
+      background-color: white;
+      color: black;
+    }
+  }
+}
+
+.block-add_item{
+  text-align: right;
+  margin-bottom: 32px;
+  .button-add{
+    background-color: #5374cb;
+    color: white;
+    padding: 6px;
+    margin-right: 12px;
+    width: fit-content;
+    margin-left: auto;
+    margin-top: 12px;
+    border: 2px solid #969bb5;
+    &:hover{
+      cursor: pointer;
+    }
+  }
+}
+
+.table-create{
+  width:100%;
+  table-layout: auto;
+  border-collapse: collapse;
+
+  td{
+    border: 1px solid #dee2e6;
+    padding: 16px;
+  }
+  input, select{
+    width:100%;
+    height:100%;
+  }
+
+  td:first-child{
+    width:20%
+  }
+}
+
+.table-settings-modal-users{
+  table-layout: auto;
+  width:100%;
+  tr{
+    display: table;
+    width: 100%;
+    td{
+      display: inline-block;
+      overflow: hidden;
+      padding: 2px 5px;
+    }
+    td:first-child{
+      width:40%;
+    }
+    td:not(:first-child){
+      width:60%;
+      padding-left: 10px;
+    }
+    &.selected{
+      background-color: #5374cb;
+      color: white;
+    }
+    &:hover{
+      cursor: pointer;
+    }
+  }
+  tbody{
+    max-height: 200px;
+    overflow-y: scroll;
+    display: block;
+  }
+}
+
+.container-main_report-graph{
+  border: 1px solid gray;
+  padding:12px;
+  height: 100%;
+  margin-bottom: 32px;
+  background-color: white;
+}
+#projectModels, #sectionModels {
+  /*border: 1px solid black;*/
+  width: 100%;
+  height: 500px
+}
+
+g[aria-labelledby*="id-"], title[id*="id-"]{
+  display: none;
 }

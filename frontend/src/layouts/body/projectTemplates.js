@@ -68,7 +68,9 @@ class projectTemplates extends React.Component {
         return (
             <div className="project_templates-lists">
                 {header}
-                {templates}
+                <div className="block-project_templates-lists">
+                    {templates}
+                </div>
             </div>
         )
 

@@ -16,10 +16,15 @@ body {
       list-style-type: none;
       padding-right: 12px;
       margin-left: 12px;
+      padding-top:12px;
 
       &.with_separator {
         height: 20px;
         border-right: 1px dashed #2e6ca4;
+        padding-top:0px;
+      }
+      &.menu-main-line_projects-icon{
+        padding-top: 0;
       }
 
       p {
@@ -32,7 +37,7 @@ body {
       }
 
       img {
-        height: 100px;
+        height: 85px;
 
         &.menu-main-search {
           height: 25px;

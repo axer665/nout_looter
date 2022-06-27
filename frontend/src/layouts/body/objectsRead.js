@@ -35,9 +35,12 @@ class projectInfo extends React.Component {
         const mainWidth = canvas.getBoundingClientRect().width
         let xStart = 10
         let xStep
+
         if (this.state.objects.length > 0){
-            xStep = mainWidth / this.state.objects.length
+            xStep = (mainWidth-30) / (this.state.objects.length - 1)
         }
+        //console.log(this.state.objects.length)
+        //console.log(xStep)
 
         if (this.state.objects.length>0){
             console.log(this.state.objects)
@@ -45,6 +48,14 @@ class projectInfo extends React.Component {
 
         objects.map(
             (object, key) => {
+                let yPos
+                if (key % 2){
+                    yPos = 60
+                } else {
+                    yPos = 10
+                }
+                //console.log(key % 2)
+
                 if (key+1 < objects.length){
                     ctx.beginPath();
                     ctx.strokeStyle = 'gray';
@@ -55,11 +66,18 @@ class projectInfo extends React.Component {
 
                 ctx.beginPath();
                 ctx.fillStyle = 'blue';
+                ctx.font = "12px Arial";
                 ctx.arc(xStart, 30, 5, 0, 2 * Math.PI);
-                ctx.fillText('(' + object.name + ')', xStart, 30 +30);
+                let widthLength = xStart + ctx.measureText(object.name).width
+                if (widthLength > mainWidth){
+                    xStart = widthLength - (ctx.measureText(object.name).width * 2)
+                }
+                ctx.fillText('(' + object.name + ')', xStart, yPos);
+
                 ctx.fill();
 
                 xStart = xStart+xStep
+
             }
         )
     }

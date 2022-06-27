@@ -8,6 +8,7 @@ import { faPen } from '@fortawesome/free-solid-svg-icons'
 import Informer from './../../components/informer/main'
 import ApiProj from './../../api/Projects'
 import ProjectAssignment from './projectAssignment'
+import NewProjectAssignment from './../../components/modals/newProjectAssignment'
 
 class projectParticipants extends React.Component {
     constructor(props) {
@@ -15,6 +16,7 @@ class projectParticipants extends React.Component {
         this.state = {
             projectId : this.props.projectId,
             users : [],
+            allUsers: [],
             roles : [],
             isLoadingData : null
         }
@@ -34,11 +36,29 @@ class projectParticipants extends React.Component {
             console.log(response.data)
             this.setState({
                 users : response.data.users,
+                allUsers : response.data.allUsers,
                 roles : response.data.roles,
                 isLoadingData : true
             })
         })
    }
+
+    addUser = (event) => {
+        console.log(event)
+        const data = {
+            'user_id' : event.user,
+            'project_id' : this.state.projectId
+        }
+
+        const headers = ApiProj.getHeaders()
+        Axios.post('http://192.168.2.119:84/api/newProjectAssignment', data, {
+            headers: headers
+        })
+        .then((response) => {
+            console.log(response.data)
+            this.getUsersInProject()
+        })
+    }
 
     render(){
         if (this.state.isLoadingData !== null){
@@ -60,12 +80,18 @@ class projectParticipants extends React.Component {
                     </div>
                 </div>
             )
+            let addUser = (
+                <NewProjectAssignment addUser={this.addUser} users={this.state.allUsers} roles={this.state.roles} />
+            )
 
             return(
                 <div className="container-project_assignments">
                     <h4>Список участников проекта</h4>
                     {headers}
-                    {assignments}
+                    <div className="block-project_assignments">
+                        {assignments}
+                    </div>
+                    {addUser}
                 </div>
             )
         } else {

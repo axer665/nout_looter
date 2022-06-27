@@ -1,7 +1,7 @@
 import Axios from 'axios'
 
 const client = Axios.create({
-    baseURL: 'http://192.168.160.62:84/api/sanctum/',
+    baseURL: 'http://192.168.2.119:84/api/sanctum/',
 });
 
 const api = {

@@ -67,7 +67,7 @@ class App extends Component {
             Authorization: "Bearer " + token
         }
 
-        Axios.get('http://192.168.160.62:84/api/checkToken',  {
+        Axios.get('http://192.168.2.119:84/api/checkToken',  {
              headers: headers,
              params: {}
            })
@@ -109,6 +109,8 @@ class App extends Component {
                         <Route path="/projects/:type" element={<MasterLayout key='projects' body='projects' user={this.state.user} checkToken={this.state.checkToken} />} />
                         <Route path="/project/:id/:trigger" element={<MasterLayout key='project' body='project' user={this.state.user} checkToken={this.state.checkToken} />} >
                         </Route>
+
+                        <Route path="/reports/:type" element={<MasterLayout key='reports' body='reports' user={this.state.user} checkToken={this.state.checkToken} />} />
 
                         <Route path="/checkList/:projId/:id" element={<MasterLayout key='checkList' body='checkList' user={this.state.user} checkToken={this.state.checkToken} />} />
 

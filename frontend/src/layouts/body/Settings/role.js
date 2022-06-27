@@ -13,7 +13,7 @@ class settingsTemplates extends React.Component {
         super(props)
         this.state = {
             user : this.props.user,
-            check : false,
+            //check : false,
             roles : this.props.roles,
 
             roleId : null,
@@ -114,7 +114,7 @@ class settingsTemplates extends React.Component {
 
        const headers = ApiSettings.getHeaders()
 
-       Axios.put('http://192.168.160.62:84/api/updateSettingsRole/'+this.state.user.id, data, {
+       Axios.put('http://192.168.2.119:84/api/updateSettingsRole/'+this.state.user.id, data, {
            headers: headers
        })
        .then((response) => {
@@ -147,7 +147,7 @@ class settingsTemplates extends React.Component {
               }
       const headers = ApiSettings.getHeaders()
 
-      Axios.put('http://192.168.160.62:84/api/updateSettingsRole/'+this.state.user.id, data, {
+      Axios.put('http://192.168.2.119:84/api/updateSettingsRole/'+this.state.user.id, data, {
           headers: headers
       })
       .then((response) => {

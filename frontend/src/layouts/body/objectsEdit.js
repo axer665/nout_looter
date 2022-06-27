@@ -10,7 +10,7 @@ import Informer from './../../components/informer/main'
 import ApiProj from './../../api/Projects'
 import ApiObj from './../../api/Objects'
 import DeleteObjectModal from './../../components/modals/confirmDeleteObject'
-
+import NewObject from './../../components/modals/newObject'
 
 class body extends React.Component {
     constructor(props) {
@@ -66,10 +66,10 @@ class body extends React.Component {
         );
     }
 
-    addObjectMethod = () => {
+    addObjectMethod = (event) => {
         const data = {
-            type: this.state.objects.newObjectType,
-            name: this.state.objects.newObjectName,
+            type: event.type,
+            name: event.name,
             project_id: this.props.projectId,
         }
 
@@ -79,7 +79,7 @@ class body extends React.Component {
             this.addInformer('error 2')
         } else {
             const headers = ApiObj.getHeaders()
-            Axios.post('http://192.168.160.62:84/api/object', data, {
+            Axios.post('http://192.168.2.119:84/api/object', data, {
                 headers: headers
             })
             .then((response) => {
@@ -127,7 +127,7 @@ class body extends React.Component {
        }
        const headers = ApiObj.getHeaders()
 
-       Axios.delete('http://192.168.160.62:84/api/object/'+objectId, {headers : headers, data : data})
+       Axios.delete('http://192.168.2.119:84/api/object/'+objectId, {headers : headers, data : data})
          .then((response) => {
                console.log(response.data)
                this.getObjects()
@@ -201,26 +201,7 @@ class body extends React.Component {
         )
 
         let addObject = (
-            <div className="d-flex flex-row bd-highlight mb-3 object_list-items justify-content-center">
-
-                <div className="object_list-item-name">
-                    <input type="text" value={this.state.objects.newProjectName} onChange={this.newObjectName} />
-                </div>
-                <div className="object_list-item-type">
-
-                {selectTypes}
-
-                </div>
-                <div className="object_list-item-control">
-                    <button type="button" className="btn btn-outline-success" onClick={this.addObjectMethod}>add</button>
-                </div>
-
-                {this.state.informers.map(
-                    (informer, key) => {
-                        return (<Informer key={key} message={informer} updateStatus={this.updateStatus} />)
-                    }
-                )}
-            </div>
+            <NewObject addObject={this.addObjectMethod} typeOptions={selectTypesOptions} />
         )
 
         let content = <div className='container-lists-objects'> {objects} {addObject} </div>

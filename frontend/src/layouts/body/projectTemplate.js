@@ -114,7 +114,7 @@ class projectTemplate extends React.Component {
             template_id: this.state.selectedVersion,
             checkLists: this.props.checkLists
         }
-        Axios.post('http://192.168.160.62:84/api/chosenTemplate', data, {
+        Axios.post('http://192.168.2.119:84/api/chosenTemplate', data, {
             headers: headers
         })
         .then((response) => {

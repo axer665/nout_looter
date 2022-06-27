@@ -25,7 +25,7 @@ class settingsMenu extends React.Component {
                 },
                 {
                     id: 2,
-                    name: "Списки",
+                    name: "Справочники",
                     link: "/settings/lists",
                 },
             ]

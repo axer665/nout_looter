@@ -151,7 +151,7 @@ class objectParam extends React.Component {
 
         const headers = ApiModel.getHeaders()
 
-        Axios.put('http://192.168.160.62:84/api/updateModel/'+this.props.modelId, data, {
+        Axios.put('http://192.168.2.119:84/api/updateModel/'+this.props.modelId, data, {
             headers: headers
         })
         .then((response) => {

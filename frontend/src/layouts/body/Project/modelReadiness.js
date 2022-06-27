@@ -1,6 +1,8 @@
 import React from 'react'
 import Axios from 'axios'
 import {Link} from 'react-router-dom'
+import debounce from "lodash/debounce"
+import loArray from "lodash/array"
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPen } from '@fortawesome/free-solid-svg-icons'
@@ -39,10 +41,6 @@ class modelReadiness extends React.Component {
         console.log(event.target.dataset.state +" - "+ event.target.value)
 
         let models = [],
-            objModel = [],
-            ObjTypeModel = [],
-            modelIds = [],
-            newModels = [],
 
             objectsIds = [],
             objectTypesIds = [],
@@ -71,108 +69,67 @@ class modelReadiness extends React.Component {
         let modelsStep1 = []
         let modelsStep2 = []
         let modelsStep3 = []
+        let modelsIDS = []
         this.state.models.filter(model => {
             if (objectsIds.length > 0){
                 if (objectsIds.includes(model.object_id)){
-                    //if (!modelIds.includes(model.id)){
-                        modelsStep1.push(model.id)
-                    //}
+                    modelsStep1.push(model.id)
                 }
             }
             if (objectTypesIds.length > 0){
                 if (objectTypesIds.includes(model.model_object.type)){
-                    //if (!modelIds.includes(model.id)){
-                        modelsStep2.push(model.id)
-                    //}
+                    modelsStep2.push(model.id)
                 }
             }
             if (stagesIds.length > 0){
                 if (stagesIds.includes(model.stage_id)){
-                    //if (!modelIds.includes(model.id)){
-                        modelsStep3.push(model.id)
-                    //}
+                    modelsStep3.push(model.id)
                 }
             }
         })
 
+        if (modelsStep1.length > 0 && modelsStep2.length > 0 && modelsStep3.length > 0){
+            modelsIDS = loArray.intersection(modelsStep1, modelsStep2, modelsStep3)
+        } else if (modelsStep1.length > 0 && modelsStep2.length > 0){
+            modelsIDS = loArray.intersection(modelsStep1, modelsStep2)
+        } else if (modelsStep1.length > 0 && modelsStep3.length > 0){
+            modelsIDS = loArray.intersection(modelsStep1, modelsStep3)
+        } else if (modelsStep2.length > 0 && modelsStep3.length > 0){
+            modelsIDS = loArray.intersection(modelsStep2, modelsStep3)
+        } else if (modelsStep3.length > 0) {
+            modelsIDS = modelsStep3
+        } else if (modelsStep2.length > 0) {
+            modelsIDS = modelsStep2
+        } else if (modelsStep1.length > 0) {
+            modelsIDS = modelsStep1
+        } else {
+            this.state.models.filter(model => {
+                modelsIDS.push(model.id)
+            })
+        }
 
-
-
-        /*models = this.state.models.filter(model => {
-            if ( event.target.dataset.state == "selectedStage" && model.stage_id == Number(event.target.value) ){
-                if (!modelIds.includes(model.id)){
-                    modelIds.push(model.id)
-                    newModels.push(model)
-                }
-                return model
-            } else if ( event.target.dataset.state != "selectedStage" && this.state.selectedStage && model.stage_id == this.state.selectedStage){
-                if (!modelIds.includes(model.id)){
-                    modelIds.push(model.id)
-                    newModels.push(model)
-                }
-                return model
+        this.state.models.filter(model => {
+            if (modelsIDS.includes(model.id)){
+                models.push(model)
             }
         })
-
-        objModel = this.state.models.filter(model => {
-             if ( event.target.dataset.state == "selectedObject" && model.object_id == Number(event.target.value) ){
-                if (!modelIds.includes(model.id)){
-                    modelIds.push(model.id)
-                    newModels.push(model)
-                }
-                return model
-             } else if ( event.target.dataset.state != "selectedObject" && this.state.selectedObject && model.object_id == this.state.selectedObject){
-                 if (!modelIds.includes(model.id)){
-                     modelIds.push(model.id)
-                     newModels.push(model)
-                 }
-                 return model
-             }
-        })
-
-        ObjTypeModel = this.state.models.filter(model => {
-            if ( event.target.dataset.state == "selectedOType" && model.model_object.type == Number(event.target.value) ){
-                if (!modelIds.includes(model.id)){
-                    modelIds.push(model.id)
-                    newModels.push(model)
-                }
-                return model
-            } else if ( event.target.dataset.state != "selectedOType" && this.state.selectedOType && model.model_object.type == this.state.selectedOType){
-                if (!modelIds.includes(model.id)){
-                    modelIds.push(model.id)
-                    newModels.push(model)
-                }
-                return model
-            }
-       })*/
-
-
-
-        console.log( this.state )
-        //this.getModels()
-        //console.log( models )
-        //console.log( objModel )
-        //console.log( ObjTypeModel )
-        //console.log(newModels)
-        console.log('objects : ')
-        console.log(objectsIds)
-        console.log('object types : ')
-        console.log(objectTypesIds)
-        console.log('stages : ')
-        console.log(stagesIds)
-        console.log('MODELS IDS : ')
-        console.log(modelIds)
-
-        console.log('step 1 : ')
-        console.log(modelsStep1)
-        console.log('step 2 :')
-        console.log(modelsStep2)
-        console.log('step 3 :')
-        console.log(modelsStep3)
 
         this.setState({
-            //sortedModels : newModels
+            sortedModels : models
         })
+
+
+        //models search text
+        let inputText = "Mode"
+        let searchModels = []
+        models.filter(model => {
+            //console.log(model.name)
+            //console.log(model.name.indexOf(inputText))
+            if ( model.name.indexOf(inputText) !== -1){
+                searchModels.push(model)
+            }
+        })
+        console.log(searchModels)
     }
 
     componentDidMount() {
@@ -235,7 +192,7 @@ class modelReadiness extends React.Component {
 
         let objectsSelect = (
             <select data-state="selectedObject" onChange={this.selected}>
-                <option value="0"> Не выбрано </option>
+                <option value="0"> Все объекты </option>
                 {this.state.objectList.map(object => {
                     return <option key={object.id} value={object.id}> {object.name} </option>
                 })}
@@ -243,7 +200,7 @@ class modelReadiness extends React.Component {
         )
         let objectTypesSelect = (
             <select data-state="selectedOType" onChange={this.selected}>
-                <option value="0"> Не выбрано </option>
+                <option value="0"> Все типы объектов </option>
                 {this.state.objectTypesList.map(objectType => {
                     return <option key={objectType.id} value={objectType.id}> {objectType.name} </option>
                 })}
@@ -251,7 +208,7 @@ class modelReadiness extends React.Component {
         )
         let stagesSelect = (
             <select data-state="selectedStage" onChange={this.selected}>
-                <option value="0"> Не выбрано </option>
+                <option value="0"> Все стадии </option>
                 {this.state.stagesList.map(stage => {
                     return <option key={stage.id} value={stage.id}> {stage.short_name} </option>
                 })}
@@ -296,10 +253,11 @@ class modelReadiness extends React.Component {
 
         return(
             <>
-                {this.state.selectedObject}
-                {objectsSelect}
-                {objectTypesSelect}
-                {stagesSelect}
+                <div className="block-project-models-filter">
+                    {objectsSelect}
+                    {objectTypesSelect}
+                    {stagesSelect}
+                </div>
                 <div className="container-models-view-list">
                     {header}
                     <div className="block-project-models-list">

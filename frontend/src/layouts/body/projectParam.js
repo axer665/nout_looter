@@ -153,7 +153,7 @@ class body extends React.Component {
         }
 
 
-        Axios.put('http://192.168.160.62:84/api/updateProject/'+this.props.projectId, data, {
+        Axios.put('http://192.168.2.119:84/api/updateProject/'+this.props.projectId, data, {
             headers: headers
         })
         .then((response) => {

@@ -21,7 +21,7 @@ class settingsTemplates extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
-            tabKey : 'project_types',
+            tabKey : 'stages',
             stages : [],
             sections : [],
             objectTypes : [],
@@ -58,6 +58,34 @@ class settingsTemplates extends React.Component {
         })
     }
 
+    getStages = () => {
+        ApiSettings.getStages()
+        .then(res => {
+            this.setState({stages : res.data.stages})
+        })
+    }
+
+    getSections = () => {
+        ApiSettings.getSections()
+        .then(res => {
+            this.setState({sections : res.data.sections})
+        })
+    }
+
+    getObjectTypes = () => {
+        ApiSettings.getObjectTypes()
+        .then(res => {
+            this.setState({objectTypes : res.data.objectTypes})
+        })
+    }
+
+    getProjectTypes = () => {
+        ApiSettings.getProjectTypes()
+        .then(res => {
+            this.setState({projectTypes : res.data.projectTypes})
+        })
+    }
+
     render(){
             let settingsMenu = <SettingsMenu key="2" selectedTab="2" />
 
@@ -69,16 +97,16 @@ class settingsTemplates extends React.Component {
                   className="mb-3"
                 >
                   <Tab eventKey="stages" title="Этапы проектирования">
-                        <SettingsStages key={this.state.stages.length} stages={this.state.stages} />
+                        <SettingsStages key={this.state.stages.length} getStages={this.getStages} stages={this.state.stages} />
                   </Tab>
                   <Tab eventKey="sections" title="Разделы проектирования">
-                        <SettingsSections key={this.state.sections.length} sections={this.state.sections} />
+                        <SettingsSections key={this.state.sections.length} getSections={this.getSections} sections={this.state.sections} />
                   </Tab>
                   <Tab eventKey="object_types" title="Типы объектов">
-                        <SettingsObjectTypes key={this.state.objectTypes.length} types={this.state.objectTypes} />
+                        <SettingsObjectTypes key={this.state.objectTypes.length} getObjectTypes={this.getObjectTypes} types={this.state.objectTypes} />
                   </Tab>
                   <Tab eventKey="project_types" title="Типы проектов">
-                        <SettingsProjectTypes key={this.state.projectTypes.length} types={this.state.projectTypes} />
+                        <SettingsProjectTypes key={this.state.projectTypes.length} getProjectTypes={this.getProjectTypes} types={this.state.projectTypes} />
                   </Tab>
                 </Tabs>
             )

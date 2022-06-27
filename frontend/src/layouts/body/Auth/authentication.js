@@ -51,6 +51,7 @@ class AuthenticationUser extends React.Component {
         this.setState({
             [trigger]: event.target.value
         })
+        console.log(this.state)
     }
 
     login = () => {

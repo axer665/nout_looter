@@ -9,6 +9,7 @@ import Informer from './../../../components/informer/main'
 import ApiSettings from './../../../api/Settings'
 import Template from './template.js'
 import SettingsMenu from './../../../components/menu/settingsMenu'
+import NewTemplate from './../../../components/modals/newTemplate'
 
 class settingsTemplates extends React.Component {
     constructor(props) {
@@ -50,32 +51,22 @@ class settingsTemplates extends React.Component {
         })
     }
 
-    addTemplateMethod = () => {
+    addTemplateMethod = (event) => {
         const data = {
-            object_type_id: this.state.newTemplateObjectType,
-            version: this.state.newTemplateVersion,
-            section_id: this.state.newTemplateSection,
-            stage_id: this.state.newTemplateStage,
+            object_type_id: event.type,
+            version: event.version,
+            section_id: event.section,
+            stage_id: event.stage,
         }
 
-        if (!data.object_type_id){
-            this.addInformer('error object type')
-        } else if (!data.version) {
-            this.addInformer('error version')
-        } else if (!data.section_id) {
-            this.addInformer('error section')
-        } else if (!data.stage_id) {
-            this.addInformer('error stage')
-        } else {
-            const headers = ApiSettings.getHeaders()
-            Axios.post('http://192.168.160.62:84/api/settingsTemplate', data, {
-                headers: headers
-            })
-            .then((response) => {
-                console.log(response.data)
-                this.getTemplates()
-            })
-        }
+        const headers = ApiSettings.getHeaders()
+        Axios.post('http://192.168.2.119:84/api/settingsTemplate', data, {
+            headers: headers
+        })
+        .then((response) => {
+            //console.log(response.data)
+            this.getTemplates()
+        })
     }
 
     addInformer = (message) => {
@@ -170,30 +161,7 @@ class settingsTemplates extends React.Component {
             )
 
             let addTemplate = (
-                <div className="d-flex flex-row bd-highlight mb-3 template_list-items justify-content-center">
-
-                    <div className="template_list-item-type">
-                        {selectTypes}
-                    </div>
-                    <div className="template_list-item-version">
-                        <input type="text" value={this.state.newTemplateVersion} onChange={this.newVersion} />
-                    </div>
-                    <div className="template_list-item-section">
-                        {selectSection}
-                    </div>
-                    <div className="template_list-item-stage">
-                        {selectStage}
-                    </div>
-                    <div className="template_list-item-control">
-                        <button type="button" className="btn btn-outline-success" onClick={this.addTemplateMethod}>add</button>
-                    </div>
-
-                    {this.state.informers.map(
-                        (informer, key) => {
-                            return (<Informer key={key} message={informer} updateStatus={this.updateStatus}/>)
-                        }
-                    )}
-                </div>
+                <NewTemplate addTemplate={this.addTemplateMethod} stageOptions={selectStageOptions} sectionOptions={selectSectionOptions} sectionOType={selectTypesOptions} />
             )
 
             let header = (

@@ -169,11 +169,24 @@ class projectAssignment extends React.Component {
         //console.log(this.state)
     }
 
+    delete = () => {
+        this.props.deleteRole(this.state.role)
+    }
 
     render(){
+        let deleteButton
+        if (this.state.edit == "edit"){
+            deleteButton = (
+                <span onClick={this.delete}>
+                    <FontAwesomeIcon icon={faXmark} />
+                </span>
+            )
+        }
+
         return(
             <div>
                 {this.state.value}
+                {deleteButton}
             </div>
         )
     }

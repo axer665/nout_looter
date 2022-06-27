@@ -16,7 +16,7 @@ let config = {
     "Content-Type": "application/json",
      Authorization: "Bearer " + token,
   },
-  baseURL : 'http://192.168.2.119:84/api/',
+  baseURL : 'http://192.168.2.119:84/api/reports/',
   params : {},
   url: '',
 };
@@ -28,30 +28,32 @@ const client = Axios.create({
 
 
 
-const ApiObj = {
+const ApiReport = {
 
     getHeaders(){
         return config.headers
     },
 
-    getObjects(params){
+    getActiveProjects(params){
         config.params = params
-        return client.get('/objects', config)
+        return client.get('/activeProjects', config)
     },
 
-    createObject(params){
+    getActiveModels(params){
         config.params = params
-        return client.post('/object', config)
+        return client.get('/activeModels', config)
     },
 
-    getTypes(){
-        return client.get('/objectTypes', config)
-    },
-    getObjectData(params){
+    getProjectModels(params){
         config.params = params
-        return client.get('/objectData', config)
+        return client.get('/projectModels', config)
     },
+
+    getSectionModels(params){
+        config.params = params
+        return client.get('/sectionModels', config)
+    }
 
 }
 
-export default ApiObj
+export default ApiReport

@@ -9,7 +9,7 @@ import Informer from './../../../components/informer/main'
 import ApiSettings from './../../../api/Settings'
 import Role from './role.js'
 import SettingsMenu from './../../../components/menu/settingsMenu'
-
+import NewSettingsRole from './../../../components/modals/newSettingsRole'
 
 class settingsTemplates extends React.Component {
     constructor(props) {
@@ -17,6 +17,7 @@ class settingsTemplates extends React.Component {
         this.state = {
             users : [],
             roles : [],
+            allUsers : []
         }
     }
 
@@ -33,12 +34,27 @@ class settingsTemplates extends React.Component {
         .then(response => {
             this.setState({
                 users : response.data.users,
-                roles : response.data.roles
+                roles : response.data.roles,
+                allUsers : response.data.allUsers
             })
             console.log(response.data)
         })
     }
 
+    addRole = (event) => {
+        console.log(event)
+        const headers = ApiSettings.getHeaders()
+        const data = {
+            userId : event.user,
+            roleId : event.role,
+        }
+        Axios.post('http://192.168.2.119:84/api/createSettingsUserRole', data, {
+            headers: headers
+        })
+        .then((response) => {
+            this.getUsers()
+        })
+    }
 
     render(){
             let settingsMenu = <SettingsMenu key="1" selectedTab="1" />
@@ -46,9 +62,9 @@ class settingsTemplates extends React.Component {
             let users = this.state.users.map((user, key)=>{
                 return (
                         <Role key={key}
-                                    user={user}
-                                    roles={this.state.roles}
-                                    />
+                            user={user}
+                            roles={this.state.roles}
+                        />
                        )
             })
 
@@ -64,6 +80,10 @@ class settingsTemplates extends React.Component {
                         Роль
                     </div>
                 </div>
+            )
+
+            let addRole = (
+                <NewSettingsRole addUser={this.addRole} users={this.state.allUsers} roles={this.state.roles} />
             )
 
             let MainBlock = "col-12",
@@ -82,7 +102,10 @@ class settingsTemplates extends React.Component {
                 <div className="container-settings-roles cl-w80">
                     {settingsMenu}
                     {header}
-                    {users}
+                    <div className="block-settings-roles">
+                        {users}
+                    </div>
+                    {addRole}
                 </div>
             )
 

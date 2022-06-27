@@ -7,6 +7,7 @@ import { faPen } from '@fortawesome/free-solid-svg-icons'
 
 import ApiSettings from './../../../../api/Settings'
 import Section from './section'
+import NewSection from './../../../../components/modals/newSection'
 
 class settingsSections extends React.Component {
     constructor(props) {
@@ -30,6 +31,27 @@ class settingsSections extends React.Component {
         })
     }
 
+    newSection = (event) => {
+        console.log(event)
+        const data = {
+            'name': event.name,
+            'short_name': event.shortName,
+        }
+
+        const headers = ApiSettings.getHeaders()
+        Axios.post('http://192.168.2.119:84/api/newSettingsSection', data, {
+            headers: headers
+        })
+        .then((response) => {
+            console.log(response.data)
+            this.rerender()
+        })
+    }
+
+    rerender = () => {
+        this.props.getSections()
+    }
+
     render(){
 
             let header = (
@@ -46,13 +68,19 @@ class settingsSections extends React.Component {
             let sections
             if (this.state.sections)
                 sections = this.state.sections.map((section, key) => {
-                    return (<Section key={key} section={section} />)
+                    return (<Section key={key} getSections={this.rerender} section={section} />)
                 })
+            let addSection = (
+                    <NewSection addSection={this.newSection} />
+                )
 
             return (
                 <div className="container-settings-lists-sections">
                     {header}
-                    {sections}
+                    <div className="block-settings-lists-sections">
+                        {sections}
+                    </div>
+                    {addSection}
                 </div>
             )
     }

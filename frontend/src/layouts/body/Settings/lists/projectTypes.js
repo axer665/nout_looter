@@ -5,10 +5,10 @@ import {Link} from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPen } from '@fortawesome/free-solid-svg-icons'
 import { CSSTransition } from 'react-transition-group'
-//import ReactCSSTransitionGroup from 'react-transition-group';
 
 import ApiSettings from './../../../../api/Settings'
 import ProjectType from './projectType'
+import NewProjectType from './../../../../components/modals/newProjectType'
 
 class settingsProjectTypes extends React.Component {
     constructor(props) {
@@ -27,6 +27,26 @@ class settingsProjectTypes extends React.Component {
 
     }
 
+    newProjectType = (event) => {
+        console.log(event)
+        const data = {
+            'name': event.name,
+        }
+
+        const headers = ApiSettings.getHeaders()
+        Axios.post('http://192.168.2.119:84/api/newSettingsProjectType', data, {
+            headers: headers
+        })
+        .then((response) => {
+            console.log(response.data)
+            this.rerender()
+        })
+    }
+
+    rerender = () => {
+        this.props.getProjectTypes()
+    }
+
     render(){
 
             let header = (
@@ -40,24 +60,20 @@ class settingsProjectTypes extends React.Component {
             var types = []
             if (this.state.types)
                 types = this.state.types.map((type, key) => {
-                    return (<ProjectType key={key} type={type} />)
+                    return (<ProjectType key={key} getProjectTypes={this.rerender} type={type} />)
                 })
+            let addProjectType = (
+                <NewProjectType addProjectType={this.newProjectType} />
+            )
+
 
             return (
                 <div className="container-settings-lists-project_types">
                     {header}
-                    <CSSTransition
-                              in={true}
-                              classNames="list-transition"
-                              transitionEnterTimeout={500}
-                              transitionLeaveTimeout={300}
-                              timeout={400}
-                              appear
-                            >
-                            <>
-                                {types}
-                            </>
-                    </CSSTransition>
+                    <div className="block-settings-lists-project_types">
+                        {types}
+                    </div>
+                    {addProjectType}
                 </div>
             )
     }

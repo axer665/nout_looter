@@ -27,7 +27,11 @@ const MYheader = (props) => {
     //console.log(props)
 
     if (props.head == "project"){
-        const projectId = params.projId
+        let projectId = params.projId
+        console.log(params)
+        if (!projectId){
+            projectId = params.id
+        }
 
         if (!projectInfo){
             ApiProj.getProject({projectId : projectId})
@@ -40,7 +44,9 @@ const MYheader = (props) => {
         settingsMenu = (
             <>
                 <li>
-                    <img src={Report} />
+                    <Link to={"/reports/main"}>
+                        <img src={Report} />
+                    </Link>
                 </li>
                 <li>
                     <Link to={"/settings"}>
@@ -74,48 +80,52 @@ const MYheader = (props) => {
         )
     } else {
         projectData = null
-        if (props.user){
-            if (props.user.user_role)
-                if (props.user.user_role.role_id == 1 || props.user.user_role.role_id == 2)
-                settingsMenu = (
-                    <>
-                        <li>
-                            <img src={Report} />
-                        </li>
-                        <li>
-                            <Link to={"/settings/templates"}>
-                                <img src={Settings} />
-                            </Link>
-                        </li>
-                    </>
-                )
-        }
-        projectMenu = (
-            <>
-                <li>
-                    <Link to={"/projects/3"}>
-                        <img src={MenuManufacture} />
-                    </Link>
-                </li>
-                <li>
-                    <Link to={"/projects/1"}>
-                        <img src={MenuTrain} />
-                    </Link>
-                </li>
-                <li>
-                    <Link to={"/projects/2"}>
-                        <img src={MenuRoad} />
-                    </Link>
-                </li>
-            </>
-        )
-        mainMenu = (
-            <>
-                { settingsMenu }
-                { projectMenu }
-            </>
-        )
     }
+
+    if (props.user){
+        if (props.user.user_role)
+            if (props.user.user_role.role_id == 1 || props.user.user_role.role_id == 2)
+            settingsMenu = (
+                <>
+                    <li>
+                        <Link to={"/reports/main"}>
+                            <img src={Report} />
+                        </Link>
+                    </li>
+                    <li>
+                        <Link to={"/settings/templates"}>
+                            <img src={Settings} />
+                        </Link>
+                    </li>
+                </>
+            )
+    }
+    projectMenu = (
+        <>
+            <li>
+                <Link to={"/projects/3"}>
+                    <img src={MenuManufacture} />
+                </Link>
+            </li>
+            <li>
+                <Link to={"/projects/1"}>
+                    <img src={MenuTrain} />
+                </Link>
+            </li>
+            <li>
+                <Link to={"/projects/2"}>
+                    <img src={MenuRoad} />
+                </Link>
+            </li>
+        </>
+    )
+    mainMenu = (
+        <>
+            { settingsMenu }
+            { projectMenu }
+        </>
+    )
+
 
     return (
 
@@ -143,7 +153,7 @@ const MYheader = (props) => {
                         <img className="menu-main-search" src={MenuSearch} />
                     </li>
 
-                    <li>
+                    <li className="menu-main-line_projects-icon">
                         <div className="menu-main-line_project">
                             <hr/>
                             <hr/>

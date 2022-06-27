@@ -19,6 +19,7 @@ class projectAssignment extends React.Component {
             originalRoles : null,
 
             selectRoles : this.props.assignment.roles_data,
+            defaultSelectRoles : this.props.assignment.roles_data,
 
             checkDisabled : null,
             checked : this.props.assignment.check,
@@ -96,7 +97,7 @@ class projectAssignment extends React.Component {
                 }
         const headers = ApiProj.getHeaders()
 
-        Axios.put('http://192.168.160.62:84/api/updateProjectAssignment/'+this.props.assignment.id, data, {
+        Axios.put('http://192.168.2.119:84/api/updateProjectAssignment/'+this.props.assignment.id, data, {
             headers: headers
         })
         .then((response) => {
@@ -153,9 +154,7 @@ class projectAssignment extends React.Component {
     }
 
     updateRole = (event) => {
-
         let arrRoles = []
-
         /*this.state.selectedRoles.filter((roleId, key) => {
             if (roleId == event.id && key == event.key){
                 arrRoles.push(Number(event.value))
@@ -216,8 +215,43 @@ class projectAssignment extends React.Component {
             allSelectedRoles: newAllSelectedRoles,
             availableRoles : newAvailableRoles,
         })
+    }
 
+    deleteRole = (event) => {
 
+        let deletedItem = {}
+        let deletedRole = this.state.roles.find( (role, key) => {
+            if (role.id == event.id){
+                deletedItem = {key:key, role:role}
+                return role
+            }
+        })
+
+        let selectedRoles = []
+        this.state.allSelectedRoles.filter(item => {
+            if (item.role.id != event.id){
+                selectedRoles.push(item)
+            }
+        })
+
+        let availableRoles = []
+        this.state.availableRoles.filter(item => {
+            availableRoles.push(item)
+        })
+        availableRoles.push(deletedRole)
+
+        let selectRoles = []
+        this.state.selectRoles.filter(role => {
+            if (role.id != event.id){
+                selectRoles.push(role)
+            }
+        })
+
+        this.setState({
+            selectRoles: selectRoles,
+            allSelectedRoles: selectedRoles,
+            availableRoles : availableRoles,
+        })
     }
 
     selectOk = () => {
@@ -234,7 +268,7 @@ class projectAssignment extends React.Component {
         }
         const headers = ApiProj.getHeaders()
 
-        Axios.put('http://192.168.160.62:84/api/updateProjectAssignment/'+this.props.assignment.id, data, {
+        Axios.put('http://192.168.2.119:84/api/updateProjectAssignment/'+this.props.assignment.id, data, {
             headers: headers
         })
         .then((response) => {
@@ -258,7 +292,28 @@ class projectAssignment extends React.Component {
     }
 
     selectCancel = () => {
+        console.log(this.state.defaultSelectRoles)
+        let selectRoles = []
+        this.state.defaultSelectRoles.filter( role => {
+            selectRoles.push(role)
+        })
+        let selectedRolesIds = []
+        selectRoles.map(role => {
+            selectedRolesIds.push(role.id)
+        })
+        let availableRoles = []
+        let localRoles = []
+        this.state.roles.map(role => {
+            if (!selectedRolesIds.includes(role.id)){
+                availableRoles.push(role)
+            }
+        })
+
         this.setState({
+            selectRoles : selectRoles,
+            availableRoles : availableRoles,
+            selectRoles : selectRoles,
+
             value : this.state.defaultValue,
             selectedRole : null,
             addRole : null,
@@ -293,14 +348,6 @@ class projectAssignment extends React.Component {
     }
 
     addRole = () => {
-        //console.log(this.state.addRoles)
-        //console.log(this.state.availableRoles)
-        //console.log(this.state.roles)
-
-        //let newRole = this.state.addRoles
-
-
-
         if (this.state.availableRoles.length > 0){
             let role = this.state.availableRoles[0]
             let availableRoles = this.state.availableRoles.filter((item, key) => key>0)
@@ -309,65 +356,7 @@ class projectAssignment extends React.Component {
                 availableRoles : availableRoles,
                 selectRoles : newSelectRoles
             })
-            //console.log('newSelectRoles : ')
-            //console.log(newSelectRoles)
-            //console.log('availableRoles : ')
-            //console.log(availableRoles)
         }
-
-
-
-
-
-        /*let currentRole = availableRoles.shift()
-        if (currentRole)
-            newRole.push({
-                currentRole : currentRole,
-                id : currentRole.id,
-                roles : availableRoles
-            })
-
-        this.setState({
-            addRoles : newRole
-        })
-
-        this.setState({
-            availableRoles : availableRoles
-        })
-
-        //console.log('selectRoles')
-        //console.log(this.state.selectRoles)
-        //console.log('addRoles')
-        //console.log(this.state.addRoles)
-        let newAddRoles = []
-        let newItemSelectRoles = []
-        if (this.state.addRoles.length > 1){
-            this.state.addRoles.map((addRole, key) => {
-                if (key == 0)
-                    newItemSelectRoles.push(addRole.currentRole)
-                else{
-                    newAddRoles.push(addRole)
-                }
-            })
-        }
-
-        //console.log('newItemSelectRoles : ')
-        //console.log(newItemSelectRoles)
-        this.state.selectRoles.filter(item => {
-            newItemSelectRoles.push(item)
-        })
-        this.setState({
-            selectRoles : newItemSelectRoles,
-        })
-        if (newAddRoles.length > 0){
-            this.setState({
-                addRoles : newAddRoles,
-            })
-        }*/
-
-        //console.log('newAddRoles : ')
-        //console.log(newAddRoles)
-        //console.log(this.state.allSelectedRoles)
     }
 
     allSelectRoles = ( event ) => {
@@ -400,9 +389,6 @@ class projectAssignment extends React.Component {
             })
         }
 
-        //console.log('selectedRoles :')
-        //console.log(selectedRoles)
-
         let selectedRolesIds = []
         selectedRoles.map(item => {
             selectedRolesIds.push(item.role.id)
@@ -414,55 +400,11 @@ class projectAssignment extends React.Component {
             }
         })
 
-        //console.log('availableRoles')
-        //console.log(availableRoles)
-        this.setState({
-            //availableRoles : availableRoles,
-        })
-
-        //console.log('ROLES : ')
-        //console.log(this.state.roles)
-
-
-        /*let prohibitedRoles = []
-        this.state.allSelectedRoles.map( role => {
-            if (role.role)
-                prohibitedRoles.push(role.role.id)
-        })
-
-        this.setState({
-            prohibitedRoles : prohibitedRoles
-        })
-
-
-        let availableRoles = []
-        this.state.roles.filter(role => {
-            if (prohibitedRoles.includes(role.id)){
-            } else {
-                availableRoles.push(role)
-            }
-        })
-
-        this.setState({
-            availableRoles : availableRoles
-        })
-
-        console.log(this.state.availableRoles)*/
-
         if (event.trigger == "selectRole"){
-            //console.log('IDS : ')
-            //console.log(selectedRolesIds)
-
-            //console.log('EVENT : ')
-            //console.log(event)
 
             this.setState({
                 localKey : this.state.localKey+1
             })
-            //console.log('selected role : ')
-            //console.log(event)
-            //console.log('available roles : ')
-            //console.log(availableRoles)
 
             if (event.firstRole){
                 let availableRolesIds = []
@@ -472,61 +414,13 @@ class projectAssignment extends React.Component {
                     newAvailableRoles.push(role)
                 })
                 if (!availableRolesIds.includes(event.firstRole)){
-                    //let newAvailableRole = this.props.roles.find(role=>role.id==event.firstRole)
-                    //console.log(newAvailableRole)
-                    //console.log(this.props.roles)
-                    //console.log(this.state.originalRoles)
-                    //console.log(this.props.copyRoles)
+
                 }
             }
         }
 
         if (event.trigger == "addRole"){
-            /*let newAllSelectedRoles = []
-            newAllSelectedRoles = this.state.allSelectedRoles.map((item, itemKey) => {
-                if (event.role)
-                if (item.id == event.role.id){
-                    item.role = event.role
-                }
-                return item
-            })
 
-            let newAddRoles = []
-            newAddRoles = this.state.addRoles.filter((item, itemKey) => {
-                if (event.myRole)
-                if (item.id == event.myRole.id){
-                    item.currentRole = event.role
-                    item.role = event.role
-                    item.roles = newAllSelectedRoles
-                }
-                return item
-            })
-
-            this.setState({
-                addRoles : newAddRoles
-            })
-
-            console.log("addRolesSelect : ")
-            console.log(newAddRoles)
-
-
-
-            /*console.log('currentRoles : ')
-            console.log(this.state.availableRoles)
-            console.log('event : ')
-            console.log(event)
-            console.log('addRoles : ')
-            console.log(this.state.addRoles)
-            */
-
-            /*let newCurrentRoles = this.state.availableRoles.map(role => {
-                if (event.role)
-                    if (role.id == event.role.id){
-                        role = event.myRole
-                    }
-                return role
-            })
-            console.log(newCurrentRoles)*/
         }
     }
 
@@ -538,7 +432,6 @@ class projectAssignment extends React.Component {
     }
 
     render(){
-        //this.allSelectRoles()
 
         let checkbox, role, disabled,
             checkId = "check"+this.state.assignment.id
@@ -554,10 +447,6 @@ class projectAssignment extends React.Component {
         let newRoles = (
             this.state.addRoles.map((role, key) => {
                 let item
-                //console.log(role)
-                //console.log(this.state.allSelectedRoles)
-
-
 
                 return <NewRole
                             key={key+"-"+this.state.editRoles+'-'+this.state.availableRoles+'-'+this.state.prohibitedRoles}
@@ -598,6 +487,7 @@ class projectAssignment extends React.Component {
                                     prohibitedRoles={this.state.prohibitedRoles}
                                     availableRoles={this.state.availableRoles}
                                     sendData={this.allSelectRoles}
+                                    deleteRole={this.deleteRole}
 
                                     returnAssignment={this.returnAssignment}
                                 />
