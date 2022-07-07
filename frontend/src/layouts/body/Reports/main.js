@@ -172,10 +172,10 @@ class reportMain extends React.Component {
                 models : [],
                 activeModels : [],
             }
-            console.log('Section Models : ')
-            console.log(new Date(project.created_at))
-            console.log(new Date(this.state.dateStart))
-            console.log(new Date(project.created_at) >=  new Date(selectedDate))
+            //console.log('Section Models : ')
+            //console.log(new Date(project.created_at))
+            //console.log(new Date(this.state.dateStart))
+            //console.log(new Date(project.created_at) >=  new Date(selectedDate))
             if (new Date(project.created_at) >= new Date(selectedDate))
                 if (project.models.length > 0){
                     project.models.filter(model => {
@@ -210,6 +210,7 @@ class reportMain extends React.Component {
         chart = root.container.children.push(am5xy.XYChart.new(root, {
           panX: false,
           panY: false,
+
           wheelX: "panX",
           wheelY: "panY",
           layout: root.verticalLayout
@@ -229,16 +230,30 @@ class reportMain extends React.Component {
             data.push(item)
         })
 
-        let yAxis = chart.yAxes.push(am5xy.CategoryAxis.new(root, {
-          categoryField: "name",
-          renderer: am5xy.AxisRendererY.new(root, {
+
+        var yRenderer = am5xy.AxisRendererY.new(root, {
             inversed: true,
             cellStartLocation: 0.1,
-            cellEndLocation: 0.9
-          })
+            cellEndLocation: 0.9,
+        })
+
+        yRenderer.labels.template.set('centerX', 100)
+        yRenderer.labels.template.set('width', 100)
+
+        let yAxis = chart.yAxes.push(am5xy.CategoryAxis.new(root, {
+          categoryField: "name",
+
+          width: 100,
+          marginLeft: 0,
+          maskContent:true,
+
+          renderer : yRenderer
         }));
 
+        //yAxis.labels.template.set('visible', false)
+
         yAxis.data.setAll(data);
+
 
         let xAxis = chart.xAxes.push(am5xy.ValueAxis.new(root, {
           renderer: am5xy.AxisRendererX.new(root, {}),
@@ -254,9 +269,10 @@ class reportMain extends React.Component {
             valueXField: field,
             categoryYField: "name",
             sequencedInterpolation: true,
+
             tooltip: am5.Tooltip.new(root, {
               pointerOrientation: "horizontal",
-              labelText: "{getName} : \n [bold]{name}[/] : {valueX}"
+              labelText: "[bold]{name}[/] \n {getName} : \n  {valueX}"
             })
           }));
 
@@ -350,13 +366,22 @@ class reportMain extends React.Component {
                     data.push(item)
                 })
 
-                let yAxis = chart.yAxes.push(am5xy.CategoryAxis.new(root, {
-                  categoryField: "name",
-                  renderer: am5xy.AxisRendererY.new(root, {
+                var yRenderer = am5xy.AxisRendererY.new(root, {
                     inversed: true,
                     cellStartLocation: 0.1,
-                    cellEndLocation: 0.9
-                  })
+                    cellEndLocation: 0.9,
+                })
+
+                yRenderer.labels.template.set('centerX', 100)
+
+                let yAxis = chart.yAxes.push(am5xy.CategoryAxis.new(root, {
+                  categoryField: "name",
+
+                  width: 100,
+                  marginLeft: 0,
+                  maskContent:true,
+
+                  renderer : yRenderer
                 }));
 
                 yAxis.data.setAll(data);
@@ -377,7 +402,7 @@ class reportMain extends React.Component {
                     sequencedInterpolation: true,
                     tooltip: am5.Tooltip.new(root, {
                       pointerOrientation: "horizontal",
-                      labelText: "{getName} : \n [bold]{name}[/] : {valueX}"
+                      labelText: "[bold]{name}[/] \n {getName} : \n  {valueX}"
                     })
                   }));
 

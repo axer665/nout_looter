@@ -28,14 +28,14 @@ class settingsSection extends React.Component {
     newName = (event) => {
         this.setState({
             nameText : event.target.value,
-            shortName : <input type="text" defaultValue={event.target.value} onChange={this.newName} />
+            name : <input type="text" defaultValue={event.target.value} onChange={this.newName} />
         })
     }
 
     newShortName = (event) => {
         this.setState({
             shortNameText : event.target.value,
-            name : <input type="text" defaultValue={event.target.value} onChange={this.newShortName} />
+            shortName : <input type="text" defaultValue={event.target.value} onChange={this.newShortName} />
         })
     }
 

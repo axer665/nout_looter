@@ -27,13 +27,14 @@ class projectInfo extends React.Component {
         let container = document.getElementById('container-objects_line');
         let w = container.getBoundingClientRect().width
         let h = container.getBoundingClientRect().height
-        console.log(w + " : " + h)
+        //console.log(w + " : " + h)
         canvas.setAttribute('width', w); // Меняем ширину canvas элемента
         canvas.setAttribute('height', h); // Меняем ширину canvas элемента
 
 
         const mainWidth = canvas.getBoundingClientRect().width
         let xStart = 10
+        let xStartLine = 10
         let xStep
 
         if (this.state.objects.length > 0){
@@ -43,12 +44,13 @@ class projectInfo extends React.Component {
         //console.log(xStep)
 
         if (this.state.objects.length>0){
-            console.log(this.state.objects)
+            //console.log(this.state.objects)
         }
 
         objects.map(
             (object, key) => {
                 let yPos
+                let topDown
                 if (key % 2){
                     yPos = 60
                 } else {
@@ -68,15 +70,28 @@ class projectInfo extends React.Component {
                 ctx.fillStyle = 'blue';
                 ctx.font = "12px Arial";
                 ctx.arc(xStart, 30, 5, 0, 2 * Math.PI);
+                //ctx.measureText(object.name).width = 50
                 let widthLength = xStart + ctx.measureText(object.name).width
                 if (widthLength > mainWidth){
-                    xStart = widthLength - (ctx.measureText(object.name).width * 2)
+                    //xStart = widthLength - (ctx.measureText(object.name).width * 2)
                 }
-                ctx.fillText('(' + object.name + ')', xStart, yPos);
+                if (key+1 == objects.length && objects.length>1){
+                    xStart = widthLength - (ctx.measureText(object.name).width * 2)
+                    yPos = yPos + 30
+                } else if (objects.length == 1){
+                    xStep = ctx.measureText(object.name).width
+                }
 
+                ctx.fillText('(' + object.name + ')', xStart, yPos, xStep*2-10);
                 ctx.fill();
 
+                ctx.beginPath();
+                ctx.moveTo(xStartLine, 30);
+                ctx.lineTo(xStartLine, yPos);
+                ctx.stroke();
+
                 xStart = xStart+xStep
+                xStartLine = xStartLine+xStep
 
             }
         )
@@ -92,7 +107,8 @@ class projectInfo extends React.Component {
     getObjects = () => {
         ApiObj.getObjects({projectId:this.state.projectId})
         .then(response => {
-            //console.log(response.data.objects)
+            console.log("OBJECTS : ")
+            console.log(response.data)
             this.setState({
                 objects : response.data.objects,
                 objectTypes : response.data.objectsCounts

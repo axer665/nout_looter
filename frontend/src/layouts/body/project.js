@@ -16,7 +16,7 @@ import ProjectMenu from './../../components/menu/projectMenu'
 import ProjectParticipants from './projectParticipants'
 import ModelReadiness from './Project/modelReadiness'
 import ProjectTemplates from './projectTemplates'
-
+import ReportProjectModels from './Project/Reports/modelList'
 
 import Sidebar from './../sidebar'
 
@@ -53,6 +53,7 @@ var projectStatuses = null
 const Project = (props) => {
     const [connect, setConnect] = useState(0);
     const [userAss, setAssignment] = useState(0)
+    const [manager, setManager] = useState(false)
     const params = useParams()
     const projId = params.id
     const trigger = params.trigger
@@ -64,13 +65,13 @@ const Project = (props) => {
 
         ApiProj.getProjectAndTypes({id: projId})
         .then(response => {
-
+             console.log(response.data)
              projectData = response.data.project
              projectTypes = response.data.types
              projectStatuses = response.data.statuses
 
              let desiredParams = {
-                 'code' : 'Шифр проекта',
+                 'code' : 'Код проекта',
                  'short_name' : 'Наименование проекта краткое',
                  'name' : 'Наименование проекта',
                  'type' : 'Тип проекта',
@@ -106,7 +107,19 @@ const Project = (props) => {
                      'keyType':keyType,
                  })
              })
+             let manager = false
+             if (props.user && projectData.assignments){
+                projectData.assignments.filter(assignment => {
+                    if (assignment.user_id == props.user.id){
+                        if (assignment.roles_ids){
+                            manager = assignment.roles_ids.manager
+                        }
+                    }
+                })
+             }
+
              setConnect(1)
+             setManager(manager)
         })
     }
 
@@ -141,6 +154,7 @@ const Project = (props) => {
                                 type={param.keyType}
                                 types={projectTypes}
                                 statuses={projectStatuses}
+                                manager={manager}
                             />
                        )
                    })
@@ -153,6 +167,7 @@ const Project = (props) => {
                         {projectDom}
                     </div>
                     <div className="container-lists cl-w80">
+                        {manager}
                         {projectObjects}
                     </div>
                 </div>
@@ -187,6 +202,16 @@ const Project = (props) => {
 
                  </div>
              )
+        } else if (trigger == "report"){
+             sideBar = <Sidebar key="3" user={props.user} projectId={projId} tabSelected="3"  user={props.user}/>
+             projectDom = (
+                <ReportProjectModels projectId={projId} user={props.user} projectData={projectData} />
+            )
+            mainContent = (
+                 <div className=''>
+                         {projectDom}
+                 </div>
+            )
         } else if (trigger == "participants"){
 
             let projectMenu = <ProjectMenu key="1" projectId={projId} selectedTab="1" user={props.user}/>

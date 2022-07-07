@@ -41,6 +41,9 @@ class projectAssignment extends React.Component {
             localKey : 0,
 
             addRole : null,
+            manager : null,
+            selectedManager : false,
+            defaultSelectedManager : false,
 
             control : (
                 <span>
@@ -49,12 +52,20 @@ class projectAssignment extends React.Component {
                 </span>
             )
         }
+        //console.log(selectedManager)
     }
 
 
     componentDidMount() {
-        //console.log(this.state.selectRoles)
+        let selectedManager = false
+        console.log(this.state.assignment)
+        if (this.state.assignment.roles_ids)
+            if (this.state.assignment.roles_ids.manager){
+                selectedManager = true
+            }
+
         let selectedRolesIds = []
+
         this.state.selectRoles.map(role => {
             selectedRolesIds.push(role.id)
         })
@@ -68,6 +79,8 @@ class projectAssignment extends React.Component {
         //console.log(availableRoles)
         this.setState({
             availableRoles : availableRoles,
+            selectedManager : selectedManager,
+            defaultSelectedManager : selectedManager
         })
     }
 
@@ -131,6 +144,15 @@ class projectAssignment extends React.Component {
         })
         select = <select defaultValue={defaultValue} onChange={this.select}> {options} </select>
 
+        let addRoleState,
+            addManagerState
+        if (this.state.selectedManager){
+            addManagerState = <button className="btn btn-danger btn-sm btn-full" onClick={this.cancelManage}> Отмена </button>
+        } else {
+            addRoleState = <button className="btn btn-primary btn-sm btn-full" onClick={this.addRole}> Добавить роль инспектора </button>
+            addManagerState = <button className="btn btn-success btn-sm btn-full" onClick={this.addManager}> Сделать менеджером </button>
+        }
+
         this.setState({
             value : select,
             valueText : defaultText,
@@ -138,7 +160,8 @@ class projectAssignment extends React.Component {
 
             editRoles : "edit",
 
-            addRole : <button onClick={this.addRole}> add </button>,
+            addRole : addRoleState,
+            manager : addManagerState,
 
             control : (
                        <span>
@@ -210,7 +233,6 @@ class projectAssignment extends React.Component {
         })
 
         this.setState({
-            //selectedRoles : arrRoles,
             selectRoles : test,
             allSelectedRoles: newAllSelectedRoles,
             availableRoles : newAvailableRoles,
@@ -255,12 +277,21 @@ class projectAssignment extends React.Component {
     }
 
     selectOk = () => {
+        let selectRoles = []
         let selectedRolesIds = []
         this.state.selectRoles.map(item => {
             selectedRolesIds.push(item.id)
         })
+        if (this.state.selectedManager){
+            this.state.defaultSelectRoles.filter( role => {
+                selectRoles.push(role)
+            })
+            selectRoles.map(role => {
+                selectedRolesIds.push(role.id)
+            })
+        }
 
-        let selectedRoles = {"list":selectedRolesIds}
+        let selectedRoles = {"list":selectedRolesIds,"manager":this.state.selectedManager}
         const data = {
             assignmentId : this.state.assignment.id,
             param : "roles_ids",
@@ -272,6 +303,7 @@ class projectAssignment extends React.Component {
             headers: headers
         })
         .then((response) => {
+            console.log(response.data)
             this.setState({
                 value : this.state.valueText,
                 checkDisabled : false,
@@ -279,6 +311,7 @@ class projectAssignment extends React.Component {
 
                 editRoles: "ok",
                 addRole : null,
+                manager : null,
 
                 control : (
                     <span>
@@ -309,6 +342,12 @@ class projectAssignment extends React.Component {
             }
         })
 
+        let selectedManager = false
+        if (this.state.defaultSelectedManager){
+            selectRoles = []
+            selectedManager = this.state.defaultSelectedManager
+        }
+
         this.setState({
             selectRoles : selectRoles,
             availableRoles : availableRoles,
@@ -317,6 +356,8 @@ class projectAssignment extends React.Component {
             value : this.state.defaultValue,
             selectedRole : null,
             addRole : null,
+            manager : null,
+            selectedManager : selectedManager,
             editRoles : "ok",
             control : (
                        <span>
@@ -357,6 +398,49 @@ class projectAssignment extends React.Component {
                 selectRoles : newSelectRoles
             })
         }
+    }
+
+    addManager = () => {
+        let availableRoles = []
+        let newSelectRoles = []
+        this.setState({
+            availableRoles : availableRoles,
+            selectRoles : newSelectRoles,
+            addRole : null,
+            selectedManager : true,
+            manager : <button className="btn btn-danger btn-sm btn-full" onClick={this.cancelManage}> Отмена </button>,
+        })
+    }
+
+    cancelManage = () => {
+
+        let selectRoles = []
+        this.state.defaultSelectRoles.filter( role => {
+            selectRoles.push(role)
+        })
+        let selectedRolesIds = []
+        selectRoles.map(role => {
+            selectedRolesIds.push(role.id)
+        })
+        let availableRoles = []
+        let localRoles = []
+        this.state.roles.map(role => {
+            if (!selectedRolesIds.includes(role.id)){
+                availableRoles.push(role)
+            }
+        })
+
+        this.setState({
+            selectRoles : selectRoles,
+            availableRoles : availableRoles,
+            selectRoles : selectRoles,
+
+            value : this.state.defaultValue,
+            selectedRole : null,
+            selectedManager : false,
+            addRole : <button className="btn btn-primary btn-sm btn-full" onClick={this.addRole}> Добавить роль инспектора </button>,
+            manager : <button className="btn btn-success btn-sm btn-full" onClick={this.addManager}> Сделать менеджером </button>,
+        })
     }
 
     allSelectRoles = ( event ) => {
@@ -463,6 +547,35 @@ class projectAssignment extends React.Component {
             })
         )
 
+        let managerRole
+        let selectedRoles = this.state.selectRoles.map( (role, key) => {
+                                                            return <ProjectAssignmentRole
+                                                                key={key+"-"+this.state.availableRoles+"-"+this.state.editRoles+"-"+this.state.localKey}
+                                                                number={key}
+                                                                role={role}
+                                                                edit={this.state.editRoles}
+                                                                roles={this.state.roles}
+                                                                updateRole={this.updateRole}
+                                                                selectedRoles={this.state.selectRoles}
+                                                                currentRoles={this.state.availableRoles}
+                                                                prohibitedRoles={this.state.prohibitedRoles}
+                                                                availableRoles={this.state.availableRoles}
+                                                                sendData={this.allSelectRoles}
+                                                                deleteRole={this.deleteRole}
+
+                                                                returnAssignment={this.returnAssignment}
+                                                            />
+                                                        }
+                                                    )
+        if (this.state.selectedManager){
+            selectedRoles = null
+            managerRole = (
+                <div className="project-assignment-role-manager">
+                    Менеджер проекта
+                </div>
+            )
+        }
+
         return(
             <div className="d-flex project_assignment_list-items project_assignment_list-item">
                 <div className="project_assignment_list-email">
@@ -473,29 +586,14 @@ class projectAssignment extends React.Component {
                      <label htmlFor={checkId}></label>
                 </div>
                 <div className="project_assignment_list-role">
+                    {this.state.selectedManager}
                     {
-                        this.state.selectRoles.map( (role, key) => {
-                                return <ProjectAssignmentRole
-                                    key={key+"-"+this.state.availableRoles+"-"+this.state.editRoles+"-"+this.state.localKey}
-                                    number={key}
-                                    role={role}
-                                    edit={this.state.editRoles}
-                                    roles={this.state.roles}
-                                    updateRole={this.updateRole}
-                                    selectedRoles={this.state.selectRoles}
-                                    currentRoles={this.state.availableRoles}
-                                    prohibitedRoles={this.state.prohibitedRoles}
-                                    availableRoles={this.state.availableRoles}
-                                    sendData={this.allSelectRoles}
-                                    deleteRole={this.deleteRole}
-
-                                    returnAssignment={this.returnAssignment}
-                                />
-                            }
-                        )
+                        selectedRoles
                     }
+                    {managerRole}
                     {newRoles}
                     {this.state.addRole}
+                    {this.state.manager}
                 </div>
                 <div className="project_assignment_list-control">
                     {this.state.control}

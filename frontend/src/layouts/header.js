@@ -41,21 +41,24 @@ const MYheader = (props) => {
             })
         }
 
-        settingsMenu = (
-            <>
-                <li>
-                    <Link to={"/reports/main"}>
-                        <img src={Report} />
-                    </Link>
-                </li>
-                <li>
-                    <Link to={"/settings"}>
-                        <img src={Settings} />
-                    </Link>
-                </li>
-            </>
-        )
-
+        if (props.user){
+                if (props.user.user_role)
+                    if (props.user.user_role.role_id == 1 || props.user.user_role.role_id == 2)
+                        settingsMenu = (
+                            <>
+                                <li>
+                                    <Link to={"/reports/main"}>
+                                        <img src={Report} />
+                                    </Link>
+                                </li>
+                                <li>
+                                    <Link to={"/settings"}>
+                                        <img src={Settings} />
+                                    </Link>
+                                </li>
+                            </>
+                        )
+        }
         let projectCode,
             projectName
 
@@ -130,13 +133,13 @@ const MYheader = (props) => {
     return (
 
         <div className="row align-items-center">
-            <div className="col">
+            <div className="col logo">
                 <Link to={"/projects/all"}>
                     <picture>
                     <img alt="Мосинжпроект" src="https://mosinzhproekt.ru/wp-content/themes/mosinzh/static/img/main-logo-ru-306x48-c-default.png"/>
                     </picture>
                 </Link>
-                <div className="text-xs uppercase text-blue-100 leading-none pl-12">
+                <div className="text-logo">
                     СТРОИМ НАСТОЯЩЕЕ, СОЗДАЕМ БУДУЩEЕ!
                 </div>
             </div>

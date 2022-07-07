@@ -177,14 +177,14 @@ class projectAssignment extends React.Component {
         let deleteButton
         if (this.state.edit == "edit"){
             deleteButton = (
-                <span onClick={this.delete}>
+                <span className="small-icon text-red" onClick={this.delete}>
                     <FontAwesomeIcon icon={faXmark} />
                 </span>
             )
         }
 
         return(
-            <div>
+            <div className="project-assignment-role">
                 {this.state.value}
                 {deleteButton}
             </div>

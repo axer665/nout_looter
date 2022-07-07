@@ -27,6 +27,8 @@ class body extends React.Component {
                 newProjectName: '',
                 isLoadingProjects: false,
             },
+            projectTypes: [],
+            projectStatuses: []
        }
 
        this.newProjectCode = this.newProjectCode.bind(this)
@@ -66,11 +68,40 @@ class body extends React.Component {
         }
         ApiProj.getProjects({'project_type_id' : type})
         .then(response => {
+            if (response.data.projects){
+                console.log(response.data)
+                /*let types = [],
+                    typeIds = [],
+                    statuses = [],
+                    statusesIds = []
+
+                response.data.projects.filter(project => {
+                    console.log(project)
+                    if (project.type)
+                        if (!typeIds.includes(project.type.id)){
+                            typeIds.push(project.type.id)
+                            types.push(project.type)
+                        }
+                    if (project.status)
+                        if (!statusesIds.includes(project.status.id)){
+                            statusesIds.push(project.status.id)
+                            statuses.push(project.status)
+                        }
+                })
+                console.log(types)
+                console.log(statuses)
+                */
+                this.setState({
+                    projectTypes : response.data.types,
+                    projectStatuses : response.data.statuses
+                })
+            }
             this.setState(prevState => {
                       let projects = Object.assign({}, prevState.projects);
                       projects.items = response.data.projects;
                       return { projects };
             })
+
         })
     }
 
@@ -78,6 +109,9 @@ class body extends React.Component {
         const data = {
             code: event.code,
             name: event.name,
+            project_type_id: event.type,
+            status: event.status,
+            creator_id: this.state.user.id
         }
 
         const headers = {
@@ -91,21 +125,26 @@ class body extends React.Component {
         //    this.addInformer('error 2')
         //} else {
             Axios.post('http://192.168.2.119:84/api/project', data, {
-                        headers: headers
-                      })
-                      .then((response) => {
-                            //console.log(response.data)
-                            this.getProjects()
-                      })
+                headers: headers
+              })
+              .then((response) => {
+                    //console.log(response.data)
+                    this.getProjects()
+              })
         //}
     }
 
    componentDidMount() {
         this.getProjects()
+        //console.log(this.props)
    }
 
    componentWillUnmount() {
    }
+
+    getProjectLists = (event) => {
+
+    }
 
    generationToken(){
         return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
@@ -151,6 +190,8 @@ class body extends React.Component {
     render(){
 
         let role = 0
+        let manager
+        //console.log(this.props.user)
 
         if (this.props.user){
             if (Object.keys(this.props.user).length > 0){
@@ -160,12 +201,19 @@ class body extends React.Component {
             }
         }
 
+        let widthHeaderCode = "project_list-code_header",
+            widthHeaderName = "project_list-name_header"
+        if(role){
+            widthHeaderCode = widthHeaderCode+" role"
+            widthHeaderName = widthHeaderName+" role"
+        }
+
         let header = (
             <div className="d-flex flex-row bd-highlight mb-3 justify-content-center container-lists-header">
-                <div className="project_list-code_header">
-                    Шифр
+                <div className={widthHeaderCode}>
+                    Код проекта
                 </div>
-                <div className="project_list-name_header">
+                <div className={widthHeaderName}>
                     Проект
                 </div>
             </div>
@@ -177,18 +225,40 @@ class body extends React.Component {
             <div className="container-projects-list block-projects-list" >
                 {
                     this.state.projects.items.map( item => {
+                        //console.log(item)
+                        let manager
+                        if (item.assignments.length > 0 && this.props.user){
+                            item.assignments.filter(assignment => {
+                                if (assignment.user_id == this.props.user.id && assignment.roles_ids){
+                                    manager = assignment.roles_ids.manager
+                                }
+                            })
+                        }
                         projectControl = ""
-                        if (role == 1){
+                        if (role == 1 || manager){
+                                    let editButton,
+                                        deleteButton
+                                    editButton = (
+                                        <Link to={"/project/"+item.id+"/edit"} >
+                                            <button type="button" className="btn btn-outline-primary"><FontAwesomeIcon icon={faPen} /></button>
+                                        </Link>
+                                    )
+                                    if (role == 1){
+                                        deleteButton = <InfoModal projectId={item.id} projectCode={item.code} projectName={item.name} deleteProject={this.deleteProject} />
+                                    }
                                     projectControl = (
 
                                             <div className="project_list-control">
-                                                <Link to={"/project/"+item.id+"/edit"} >
-                                                    <button type="button" className="btn btn-outline-primary"><FontAwesomeIcon icon={faPen} /></button>
-                                                </Link>
-                                                <InfoModal projectId={item.id} projectCode={item.code} projectName={item.name} deleteProject={this.deleteProject} />
+                                                {editButton}
+                                                {deleteButton}
                                             </div>
 
                                     )
+                       } else {
+                            projectControl = (
+                                <div className="project_list-control">
+                                </div>
+                            )
                        }
 
                         return (
@@ -238,8 +308,7 @@ class body extends React.Component {
                 </div>
             )*/
             addProject = (
-                <NewProject addProject={this.addProjectMethod} />
-
+                <NewProject addProject={this.addProjectMethod} statuses={this.state.projectStatuses} types={this.state.projectTypes}/>
             )
         }
 

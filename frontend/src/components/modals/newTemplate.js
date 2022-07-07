@@ -84,7 +84,7 @@ function Example(props) {
   return (
     <>
       <div className="block-add_item">
-          <div className="button-add button_add_project" onClick={handleShow}>
+          <div className="button-add button_add_project btn btn-primary" onClick={handleShow}>
               Добавить +
           </div>
       </div>

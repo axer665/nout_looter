@@ -30,12 +30,17 @@ class projectInfo extends React.Component {
    }
 
    handleEvent = (event) => {
-        let value = $(event.target).html()
-        let criterion = {
-            id : this.state.id,
-            value : value
+        //console.log($(event.target))
+        //console.log(event.target.dataset.value)
+        //let value = $(event.target).html()
+        let value = event.target.dataset.value
+        if (value != this.state.value){
+            let criterion = {
+                id : this.state.id,
+                value : value
+            }
+            this.props.assignGrade(criterion)
         }
-        this.props.assignGrade(criterion)
    }
 
    editFootnote = (event) => {
@@ -96,7 +101,7 @@ class projectInfo extends React.Component {
                             max={100}
                             thumbClassName="example-thumb"
                             trackClassName="example-track"
-                            renderThumb={(props, state) => <div {...props} onMouseUp={ this.handleEvent }><p>{state.valueNow}</p></div>}
+                            renderThumb={(props, state) => <div {...props} onMouseUp={ this.handleEvent } onMouseLeave={ this.handleEvent } data-value={state.valueNow}><p data-value={state.valueNow}>{state.valueNow}</p></div>}
                             renderMark={(props) => {
                                 if (props.key != 0 && props.key != 100){
                                     return (

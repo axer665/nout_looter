@@ -10,7 +10,7 @@ import Informer from './../../components/informer/main'
 class sideBarMenu extends React.Component {
     constructor(props) {
         super(props)
-
+        console.log(props)
         let readiness =  [
                             {
                                 id: 0,
@@ -25,13 +25,21 @@ class sideBarMenu extends React.Component {
 
                         ]
         if (props.user && props.userAssignments){
-            if (props.user.user_role && props.userAssignments.roles_data.length > 0){
+            if ((props.user.user_role && props.userAssignments.roles_data.length > 0) || props.userAssignments.roles_ids.manager){
                 readiness.push({
                     id: 2,
                     name: "Оценка готовности модели",
                     link: "/project/"+this.props.projectId+"/model_readiness",
                 })
             }
+            if (props.user.user_role)
+                if (Number(props.user.user_role.role_id) == 2 || Number(props.user.user_role.role_id) == 1){
+                    readiness.push({
+                        id: 3,
+                        name: "Оценка готовности модели 2",
+                        link: "/project/"+this.props.projectId+"/report",
+                    })
+                }
         } else if (props.selectedTab == 2){
             readiness.push({
                 id: 2,
@@ -39,6 +47,8 @@ class sideBarMenu extends React.Component {
                 link: "/project/"+this.props.projectId+"/model_readiness",
             })
         }
+
+
         //console.log('SIDEBAR PROPS :')
         //console.log(props)
         this.state = {
@@ -49,9 +59,7 @@ class sideBarMenu extends React.Component {
 
 
    componentDidMount() {
-        //console.log('MENU USER')
-        //console.log(this.props)
-        //console.log(this.state.tabs)
+
    }
 
    componentWillUnmount() {

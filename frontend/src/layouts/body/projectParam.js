@@ -52,11 +52,13 @@ class body extends React.Component {
             })
         } else if (this.props.keyType == "select"){
 
-            let select
-            let options
+            let select,
+                options,
+                nullOption
 
             if (this.state.name=="status"){
                 let defaultValue = 0
+
                 options = this.state.statuses.map( (status) => {
                     let selected = (
                         <option key={status.id} value={status.id} >
@@ -71,7 +73,10 @@ class body extends React.Component {
                         selected
                     )
                 })
-                select = <select defaultValue={defaultValue} onChange={this.select}> {options} </select>
+                if (!this.props.value){
+                    nullOption = <option value="0" disabled defaultValue> Не выбрано </option>
+                }
+                select = <select defaultValue={defaultValue} onChange={this.select}> {nullOption} {options} </select>
             } else if (this.state.name == "type"){
                 let defaultValue = 0
                 options = this.state.types.map( (type) => {
@@ -90,7 +95,10 @@ class body extends React.Component {
                         selected
                     )
                 })
-                select = <select defaultValue={defaultValue} onChange={this.select}> {options} </select>
+                if (!this.props.value){
+                    nullOption = <option value="0" disabled> Не выбрано </option>
+                }
+                select = <select defaultValue={defaultValue} onChange={this.select}> {nullOption} {options} </select>
             }
 
             this.setState({

@@ -89,7 +89,7 @@ class masterLayout extends React.Component {
    }
 
     rerender = (event) => {
-        console.log('rerender')
+        //console.log('rerender')
         this.setState({
             rerenderKey : this.state.rerenderKey + 1
         })

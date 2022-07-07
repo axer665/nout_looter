@@ -13,7 +13,7 @@ class settingsTemplates extends React.Component {
         super(props)
         this.state = {
             user : this.props.user,
-            //check : false,
+            check : false,
             roles : this.props.roles,
 
             roleId : null,
@@ -21,7 +21,7 @@ class settingsTemplates extends React.Component {
             valueText : null,
             defaultValue : null,
 
-            check : 0,
+            //check : 0,
 
             control : <button type="button" className="btn btn-outline-secondary" onClick={this.editRole}> <FontAwesomeIcon icon={faPen} /> </button>
         }

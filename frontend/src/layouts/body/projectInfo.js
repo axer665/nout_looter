@@ -16,6 +16,7 @@ class projectInfo extends React.Component {
             check : 0,
             userAssignments : [],
             isAssignments : false,
+            manager : false
         }
         this.getUserRoleInProject()
     }
@@ -30,17 +31,22 @@ class projectInfo extends React.Component {
         ApiUser.getProjectAssignments({'userId':this.state.user.id, 'projectId':this.props.projectData.id})
         .then(response => {
             //console.log('resData : ')
-            //console.log(response.data)
+            console.log(response.data)
             let assignments = [],
-                check = 0
+                check = 0,
+                manager = false
             if (response.data.assignments){
                 assignments = response.data.assignments.roles_data
                 check = response.data.assignments.check
+                if (response.data.assignments.roles_ids)
+                    if (response.data.assignments.roles_ids.manager)
+                        manager = response.data.assignments.roles_ids.manager
             }
             this.setState({
                 userAssignments : assignments,
                 check : check,
-                isAssignments : response.data.assignments
+                isAssignments : response.data.assignments,
+                manager : manager
             })
         })
     }
@@ -87,8 +93,10 @@ class projectInfo extends React.Component {
             }
             //console.log(assignmentsCount)
             //console.log(this.state.isAssignments)
-            if (assignmentsCount || this.state.isAssignments){
-                if (nullRole)
+            if (assignmentsCount || this.state.isAssignments || this.state.manager){
+                if (this.state.manager)
+                    assignments = <> Вы являетесь менеджером проекта </>
+                else if (nullRole)
                     assignments = <> Вы подали заявку на участие в этом проекте. Вы получите к нему доступ как только Администратор присвоит вам роль. </>
                 else
                     assignments = <>Вы участвуете в этом проекте в роли : {assignments} </>

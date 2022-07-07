@@ -31,6 +31,7 @@ class modelReadiness extends React.Component {
             selectedStage: null,
             test : 0,
         }
+        console.log(props)
     }
 
     selected = (event) => {
@@ -46,7 +47,7 @@ class modelReadiness extends React.Component {
             objectTypesIds = [],
             stagesIds = []
 
-        console.log(event.target.dataset.state)
+        //console.log(event.target.dataset.state)
 
         if (event.target.dataset.state == "selectedObject" && !objectsIds.includes(Number(event.target.value)) && Number(event.target.value) !== 0){
             objectsIds.push(Number(event.target.value))
@@ -72,21 +73,25 @@ class modelReadiness extends React.Component {
         let modelsIDS = []
         this.state.models.filter(model => {
             if (objectsIds.length > 0){
-                if (objectsIds.includes(model.object_id)){
+                if (objectsIds.includes(Number(model.object_id))){
                     modelsStep1.push(model.id)
                 }
             }
             if (objectTypesIds.length > 0){
-                if (objectTypesIds.includes(model.model_object.type)){
+                if (objectTypesIds.includes(Number(model.model_object.type))){
                     modelsStep2.push(model.id)
                 }
             }
             if (stagesIds.length > 0){
-                if (stagesIds.includes(model.stage_id)){
+                if (stagesIds.includes(Number(model.stage_id))){
                     modelsStep3.push(model.id)
                 }
             }
         })
+
+        console.log('STEP 1 : ')
+        console.log(objectsIds)
+        console.log(modelsStep1)
 
         if (modelsStep1.length > 0 && modelsStep2.length > 0 && modelsStep3.length > 0){
             modelsIDS = loArray.intersection(modelsStep1, modelsStep2, modelsStep3)
@@ -118,6 +123,8 @@ class modelReadiness extends React.Component {
             sortedModels : models
         })
 
+        console.log('SORTED MODELS : ')
+        console.log(models)
 
         //models search text
         let inputText = "Mode"
@@ -140,6 +147,9 @@ class modelReadiness extends React.Component {
     }
 
     getModels = () => {
+
+
+
         ApiModel.getModels({
             'projectId': this.props.projectId,
             'userId': this.props.user.id,
@@ -151,6 +161,7 @@ class modelReadiness extends React.Component {
             'stageId': this.state.selectedStage
         })
         .then(response => {
+            console.log(response.data)
             let objectsIds = [],
                 objects = [],
                 objectTypesIds = [],
