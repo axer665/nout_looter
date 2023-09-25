@@ -114,10 +114,11 @@ class body extends React.Component {
             creator_id: this.state.user.id
         }
 
-        const headers = {
+        /*const headers = {
             "Content-Type": "application/json",
             Authorization: "Bearer " + "4|lYkjKOIEawdFpsIuc9c3fUY6wpQBwKlCEV3uOo03"
-        }
+        }*/
+        const headers = ApiProj.getHeaders()
 
         //if (!data.code){
         //    this.addInformer('error 1')
@@ -175,10 +176,11 @@ class body extends React.Component {
         const data = {
             id: projectId
         }
-        const headers = {
+        /*const headers = {
             "Content-Type": "application/json",
             Authorization: "Bearer " + "4|lYkjKOIEawdFpsIuc9c3fUY6wpQBwKlCEV3uOo03"
-        }
+        }*/
+        const headers = ApiProj.getHeaders()
 
         Axios.delete('http://192.168.2.119:84/api/project/'+projectId, {headers : headers, data : data})
           .then((response) => {

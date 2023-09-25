@@ -136,8 +136,16 @@ const Project = (props) => {
             Container = "container-fluid h-100"
         }
         console.log(criterions)
+        let buttonBack = (
+            <div className="d-flex justify-content-start container-menu-settings_menu">
+                <a href="/settings/templates">
+                    <div className="menu-item selected">Назад к шаблонам</div>
+                </a>
+            </div>
+        )
         let mainContent = (
             <div className="container-templates cl-w80">
+                {buttonBack}
                 <div className="container-lists-template_criterions">
                     {header}
                     <DragDropContext onDragEnd={sortedCriterions}>

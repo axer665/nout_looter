@@ -30,8 +30,8 @@ function Example(props) {
   const addRole = () => {
     if (!selectedUser){
         addInformerMethod('Выберите пользователя, которому назначаете роль')
-    } else if (!selectedRole){
-        addInformerMethod('Не выбрана роль, которую необходимо присвоить пользователю')
+    //} else if (!selectedRole){
+    //    addInformerMethod('Не выбрана роль, которую необходимо присвоить пользователю')
     } else {
         props.addUser({'user': selectedUser, 'role': selectedRole})
         addInformerMethod('Пользователю назначена роль')
@@ -126,7 +126,7 @@ function Example(props) {
 
       <Modal show={show} onHide={handleClose} animation={false} size="lg">
         <Modal.Header closeButton>
-          <Modal.Title> Создание критерия оценки модели </Modal.Title>
+          <Modal.Title> Добавление администратора системы </Modal.Title>
         </Modal.Header>
         <Modal.Body>
             <table className="table-create">
@@ -144,14 +144,14 @@ function Example(props) {
                             </div>
                         </td>
                     </tr>
-                    <tr>
+                    {/*<tr>
                         <td>
                             Роль
                         </td>
                         <td>
                             {selectRoles}
                         </td>
-                    </tr>
+                    </tr>*/}
                 </tbody>
             </table>
         </Modal.Body>

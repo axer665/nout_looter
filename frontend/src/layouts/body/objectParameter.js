@@ -146,16 +146,25 @@ class objectParam extends React.Component {
    }
 
     mutator = () => {
+
         if (this.state.id == "object_type")
             this.setState({
                 id : 'type'
             })
         if (typeof this.state.data == "object"){
-            this.setState({
-                value : (<p> {this.state.data.name} </p>),
-                valueText : this.state.data.name,
-                valueTextDef : this.state.data.name
-            })
+            if (this.state.data) {
+                this.setState({
+                    value: (<p> {this.state.data.name} </p>),
+                    valueText: this.state.data.name,
+                    valueTextDef: this.state.data.name
+                })
+            } else {
+                this.setState({
+                    value: (<p>  </p>),
+                    valueText: '',
+                    valueTextDef: ''
+                })
+            }
         } else {
             this.setState({
                 value : (<p> {this.state.data} </p>),
@@ -168,6 +177,7 @@ class objectParam extends React.Component {
     render(){
         let value = this.state.data
         if (typeof this.state.data == 'object'){
+            if (this.state.data)
             value = this.state.data.name
         }
 

@@ -303,6 +303,8 @@ class settingsTemplates extends React.Component {
 
     render(){
 
+
+
             let versions = this.state.versions.map((version, key) => {
                 return (<TemplateVersion key={key} template={version.template_info} updateTemplateRoot={this.reloadTemplate} />)
             })

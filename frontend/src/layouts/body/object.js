@@ -30,6 +30,7 @@ const ObjectParameterLayout = () => {
 
             let desiredParams = {
                  'name' : { name : 'Наименование', type : 'text' },
+                 'short_name' : { name : 'Наименование краткое', type : 'text' },
                  'object_type' : { name : 'Тип объекта', type : 'select'  }
             }
 

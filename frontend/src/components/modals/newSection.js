@@ -64,7 +64,7 @@ function Example(props) {
 
       <Modal show={show} onHide={handleClose} animation={false}>
         <Modal.Header closeButton>
-          <Modal.Title> Создание стадии </Modal.Title>
+          <Modal.Title> Создание раздела проектирования </Modal.Title>
         </Modal.Header>
         <Modal.Body>
             <table className="table-create">

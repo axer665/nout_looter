@@ -1,0 +1,1926 @@
+
+<canvas id="canvas"></canvas>
+
+<style>
+#canvas {
+    width:100%;
+    height: 500px;
+}
+</style>
+
+<script>
+const canvas = document.getElementById("canvas");
+const ctx = canvas.getContext("2d"); 
+canvas.width = canvas.offsetWidth;
+canvas.height = canvas.offsetHeight;
+let eyes = [];
+let theta;
+let theta2;
+const mouse = {
+    x: undefined,
+    y: undefined
+};
+
+var player;
+var myChildren;
+
+var titleimage;
+var player;
+var player_bullets = [];
+var enemy_bullets = [];
+
+var defenders = [];
+var explosions = [];
+var smokes = [];
+var wracks = [];
+var houses = [];
+var items = [];
+
+var defenderdata = [];
+
+var housedata = [];
+var bulletdata = [];
+var paused = false;
+var mainy = true;
+var action = 0;
+var intervalId;
+var deathcount = 0;
+var dead = false;
+var waiting = false;
+var currentlevel;
+
+// координаты многоугольника
+var pol = [{
+        'x': 100,
+        'y': 150
+    }, {
+        'x': 120,
+        'y': 50
+    }, {
+        'x': 200,
+        'y': 80
+    }, {
+        'x': 140,
+        'y': 210
+    }];
+
+// LINE SEGMENTS
+var segments = [
+
+	// Border
+	{a:{x:0,y:0}, b:{x:640,y:0}},
+	{a:{x:640,y:0}, b:{x:640,y:360}},
+	{a:{x:640,y:360}, b:{x:0,y:360}},
+	{a:{x:0,y:360}, b:{x:0,y:0}},
+
+	// Polygon #1
+	{a:{x:100,y:150}, b:{x:120,y:50}},
+	{a:{x:120,y:50}, b:{x:200,y:80}},
+	{a:{x:200,y:80}, b:{x:140,y:210}},
+	{a:{x:140,y:210}, b:{x:100,y:150}},
+
+	// Polygon #2
+	{a:{x:100,y:200}, b:{x:120,y:250}},
+	{a:{x:120,y:250}, b:{x:60,y:300}},
+	{a:{x:60,y:300}, b:{x:100,y:200}},
+
+	// Polygon #3
+	{a:{x:200,y:260}, b:{x:220,y:150}},
+	{a:{x:220,y:150}, b:{x:300,y:200}},
+	{a:{x:300,y:200}, b:{x:350,y:320}},
+	{a:{x:350,y:320}, b:{x:200,y:260}},
+
+	// Polygon #4
+	{a:{x:340,y:60}, b:{x:360,y:40}},
+	{a:{x:360,y:40}, b:{x:370,y:70}},
+	{a:{x:370,y:70}, b:{x:340,y:60}},
+
+	// Polygon #5
+	{a:{x:450,y:190}, b:{x:560,y:170}},
+	{a:{x:560,y:170}, b:{x:540,y:270}},
+	{a:{x:540,y:270}, b:{x:430,y:290}},
+	{a:{x:430,y:290}, b:{x:450,y:190}},
+
+	// Polygon #6
+	{a:{x:400,y:95}, b:{x:580,y:50}},
+	{a:{x:580,y:50}, b:{x:480,y:150}},
+	{a:{x:480,y:150}, b:{x:400,y:95}}
+
+]
+
+
+
+
+housedata.push([39,40]);
+housedata.push([45,72]);	
+housedata.push([57,89]);
+bulletdata.push([6,67,1,1,10]);
+bulletdata.push([8,100,2,87,99]);
+bulletdata.push([10,120,3,152,168]);
+defenderdata.push([28,11,3]);
+defenderdata.push([49,33,5]);
+
+
+
+var myAngle = 0
+var myAngle2 = myAngle + 90 
+
+var myUser = {
+	x: 200,
+	y: 100,
+	vision: false
+}
+
+document.onkeydown = function( e ) {
+	//console.log(e.keyCode)
+	
+	if( e.keyCode == 39 ){ 
+		//myChildren.setRoute(1)
+		myChildren.rotateToRight()
+	}
+	if( e.keyCode == 37 ){ 
+		//myChildren.setRoute(1)
+		myChildren.rotateToLeft()
+	}
+
+	if (e.keyCode == 87){
+		myChildren.foward()
+	}
+	if (e.keyCode == 65){
+		myChildren.foleft()
+	}
+	if (e.keyCode == 83){
+		myChildren.foback()
+	}
+	if (e.keyCode == 68){
+		myChildren.foright()
+	}
+
+	if (e.keyCode == 32){
+		myChildren.fire()
+	}
+}
+
+document.onkeyup = function( e ) {
+	//console.log(e.keyCode)
+
+	if (e.keyCode == 87){
+		myChildren.stopUp()
+	}
+	if (e.keyCode == 65){
+		myChildren.stopLeft()
+	}
+	if (e.keyCode == 83){
+		myChildren.stopBack()
+	}
+	if (e.keyCode == 68){
+		myChildren.stopRight()
+	}
+
+	if( e.keyCode == 39 ){ 
+		//myChildren.setRoute(1)
+		myChildren.rotateStopRight()
+	}
+	if( e.keyCode == 37 ){ 
+		//myChildren.setRoute(1)
+		myChildren.rotateStopLeft()
+	}
+}
+
+function drawMyLine(x,y,angleDeg,length){//Угол в градусах
+  var angle = angleDeg * Math.PI/180;
+  ctx.beginPath();
+  ctx.moveTo(x,y);
+  ctx.lineTo(x + Math.cos(angle)*length, y + Math.sin(angle)*length);  
+  ctx.stroke();
+}
+
+function myCollision(leftBorder, rightBorder, segment){
+	// x1 - leftBorder.x
+	// x2 - rightBorder.x
+	// x3 - segment.a.x
+	// x4 - segment.b.x
+	let x=((leftBorder.x*rightBorder.y-leftBorder.y*rightBorder.x)*(segment.a.x-segment.b.x)-(leftBorder.x-rightBorder.x)*(segment.a.x*segment.b.y-segment.a.y*segment.b.x))/((leftBorder.x-rightBorder.x)*(segment.a.y-segment.b.y)-(leftBorder.y-rightBorder.y)*(segment.a.x-segment.b.x));
+    let y=((leftBorder.x*rightBorder.y-leftBorder.y*rightBorder.x)*(segment.a.y-segment.b.y)-(leftBorder.y-rightBorder.y)*(segment.a.x*segment.b.y-segment.a.y*segment.b.x))/((leftBorder.x-rightBorder.x)*(segment.a.y-segment.b.y)-(leftBorder.y-rightBorder.y)*(segment.a.x-segment.b.x));
+    if (isNaN(x)||isNaN(y)) {
+        return false;
+    } else {
+        if (leftBorder.x>=rightBorder.x) {
+            if (!(rightBorder.x<=x&&x<=leftBorder.x)) {return false;}
+        } else {
+            if (!(leftBorder.x<=x&&x<=rightBorder.x)) {return false;}
+        }
+        if (leftBorder.y>=rightBorder.y) {
+            if (!(rightBorder.y<=y&&y<=leftBorder.y)) {return false;}
+        } else {
+            if (!(leftBorder.y<=y&&y<=rightBorder.y)) {return false;}
+        }
+        if (segment.a.x>=segment.b.x) {
+            if (!(segment.b.x<=x&&x<=segment.a.x)) {return false;}
+        } else {
+            if (!(segment.a.x<=x&&x<=segment.b.x)) {return false;}
+        }
+        if (segment.a.y>=segment.b.y) {
+            if (!(segment.b.y<=y&&y<=segment.a.y)) {return false;}
+        } else {
+            if (!(segment.a.y<=y&&y<=segment.b.y)) {return false;}
+        }
+    }
+    //return true;
+    let result = {
+    	x: x,
+    	y: y
+    }
+    return result
+}
+
+function getIntersection(ray, segment, length){
+
+	// RAY in parametric: Point + Direction*T1
+	var r_px = ray.a.x;
+	var r_py = ray.a.y;
+	var r_dx = ray.b.x-ray.a.x;
+	var r_dy = ray.b.y-ray.a.y;
+
+	var s_px = segment.a.x;
+	var s_py = segment.a.y;
+	var s_dx = segment.b.x-segment.a.x;
+	var s_dy = segment.b.y-segment.a.y;
+
+	// Are they parallel? If so, no intersect
+	var r_mag = Math.sqrt(r_dx*r_dx+r_dy*r_dy);
+	var s_mag = Math.sqrt(s_dx*s_dx+s_dy*s_dy);
+	if(r_dx/r_mag==s_dx/s_mag && r_dy/r_mag==s_dy/s_mag){ // Directions are the same.
+		return null;
+	}
+
+	var T2 = (r_dx*(s_py-r_py) + r_dy*(r_px-s_px))/(s_dx*r_dy - s_dy*r_dx);
+	var T1 = (s_px+s_dx*T2-r_px)/r_dx;
+	
+
+	// Must be within parametic whatevers for RAY/SEGMENT
+	if(T1<0) return null;
+	if(T2<0 || T2>1) return null;
+	
+	if (T1 > length) T1 = length
+	
+	
+	
+	let myX = r_px+r_dx*(T1)
+	let myY = r_py+r_dy*(T1)
+	
+	let dx = r_dx;
+    let dy = r_dy;
+	let theta = Math.atan2(dy, dx);
+	
+	
+	let cos = Math.cos(theta);
+	let sin = Math.sin(theta);
+	
+	let newX = r_px + cos * length ;
+	let newY = r_py + sin * length ;
+	
+	
+	
+
+	/*if (myX > newX && myY > newY) {
+		myX = newX
+		myY = newY
+	}*/
+	//if(myY > newY) myY = newY
+
+	let start 
+	if (segment.start) start=segment.start
+
+	return {
+		x: myX,
+		y: myY,
+		start: start,
+		//x: newX,
+		//y: newY,
+		param: T1
+	};
+}
+
+function detectVision(player, itemPoint1, itemPoint2, enemy, length){
+	let x1 = itemPoint1.x - player.x
+	let	y1 = itemPoint1.y - player.y
+	let	x2 = itemPoint2.x - player.x
+	let	y2 = itemPoint2.y - player.y
+	let	xa = enemy.x - player.x
+	let	ya = enemy.y - player.y
+	
+	let	s12 = Math.sign(x1 * y2 - y1 * x2)
+	let	s1a = Math.sign(x1 * ya - y1 * xa)
+	let	sa2 = Math.sign(xa * y2 - ya * x2)
+	
+	if (Math.sqrt(Math.pow(player.x - enemy.x,2) + Math.pow(player.y - enemy.y,2)) <= length) {
+		//console.log('nice')
+		if (s12 == s1a && s1a == sa2 ){
+			/*console.log('----')
+			console.log(s12)
+			console.log(s1a)
+			console.log(sa2)*/
+			//console.log('super')
+			return enemy
+		}
+	}
+}
+
+function rayCollision(ray, segment){
+
+	// RAY in parametric: Point + Direction*T1
+	var r_px = ray.a.x;
+	var r_py = ray.a.y;
+	var r_dx = ray.b.x-ray.a.x;
+	var r_dy = ray.b.y-ray.a.y;
+
+	var s_px = segment.a.x;
+	var s_py = segment.a.y;
+	var s_dx = segment.b.x-segment.a.x;
+	var s_dy = segment.b.y-segment.a.y;
+
+	// Are they parallel? If so, no intersect
+	var r_mag = Math.sqrt(r_dx*r_dx+r_dy*r_dy);
+	var s_mag = Math.sqrt(s_dx*s_dx+s_dy*s_dy);
+	if(r_dx/r_mag==s_dx/s_mag && r_dy/r_mag==s_dy/s_mag){ // Directions are the same.
+		return null;
+	}
+
+	var T2 = (r_dx*(s_py-r_py) + r_dy*(r_px-s_px))/(s_dx*r_dy - s_dy*r_dx);
+	var T1 = (s_px+s_dx*T2-r_px)/r_dx;
+	
+
+	// Must be within parametic whatevers for RAY/SEGMENT
+	if(T1<0) return null;
+	if(T2<0 || T2>1) return null;
+	
+	let myX = r_px+r_dx*(T1)
+	let myY = r_py+r_dy*(T1)
+
+	let x1 = segment.a.x,
+		y1 = segment.a.y,
+		x2 = segment.b.x,
+		y2 = segment.b.y,
+		x3 = ray.a.x,
+		y3 = ray.a.y,
+		dx1 = x2 - x1,
+		dy1 = y2 - y1,
+		dx = x3 - x1,
+		dy = y3 - y1,
+		s = dx1 * dy - dx * dy1
+
+	let test = s
+
+	return {
+		x: myX,
+		y: myY,
+		param: T1,
+		test: s
+	};
+}
+
+// проверяем расположение точки (слева от вектора, справа от вектора, или принадлежит вектору)
+function classify(vector, x1, y1) {
+    var pr = (vector.x2 - vector.x1) * (y1 - vector.y1) - (vector.y2 - vector.y1) * (x1 - vector.x1);
+    if (pr > 0)
+        return 1;
+    if (pr < 0)
+        return -1;
+    return 0;
+}
+
+// классифицируем ребро (Касается, пересекает или безразлично)
+function edgeType(vector, a) {
+    switch (classify(vector, a.x, a.y)) {
+        case 1:
+            return ( (vector.y1 < a.y) && (a.y <= vector.y2) ) ? 1 : 2;
+            break;
+        case -1:
+            return ((vector.y2 < a.y) && (a.y <= vector.y1)) ? 1 : 2;
+            break;
+        case 0:
+            return 0;
+            break;
+    }
+}
+
+function pointInPolygon(player) {
+    parity = 0;
+    for (let i = 0; i < pol.length - 1; i++) {
+        v = {
+            'x1': pol[i].x,
+            'y1': pol[i].y,
+            'x2': pol[i + 1].x,
+            'y2': pol[i + 1].y
+        }
+        switch (edgeType(v, player)) {
+            case 0:
+                return 2;
+                break;
+            case 1:
+                parity = 1 - parity;
+                break;
+        }
+    }
+    v = {
+        'x1': pol[pol.length - 1].x,
+        'y1': pol[pol.length - 1].y,
+        'x2': pol[0].x,
+        'y2': pol[0].y
+    }
+    switch (edgeType(v, player)) {
+        case 0:
+            return 2;
+            break;
+        case 1:
+            parity = 1 - parity;
+            break;
+    }
+    return parity;
+}
+
+function pointInBody(item, body) {
+    let parity = 0;
+    let pol = body
+    for (let i = 0; i < pol.length - 1; i++) {
+        v = {
+            'x1': pol[i].x,
+            'y1': pol[i].y,
+            'x2': pol[i + 1].x,
+            'y2': pol[i + 1].y
+        }
+        switch (edgeType(v, item)) {
+            case 0:
+                return 2;
+                break;
+            case 1:
+                parity = 1 - parity;
+                break;
+        }
+    }
+    v = {
+        'x1': pol[pol.length - 1].x,
+        'y1': pol[pol.length - 1].y,
+        'x2': pol[0].x,
+        'y2': pol[0].y
+    }
+    switch (edgeType(v, item)) {
+        case 0:
+            return 2;
+            break;
+        case 1:
+            parity = 1 - parity;
+            break;
+    }
+    return parity;
+}
+
+const TWO_PI = 2 * Math.PI;
+function normalizeRot(rot) {// converts angle to its equivalent from interval [-pi; pi]
+	return rot - TWO_PI * Math.floor((rot + Math.PI) / TWO_PI);
+}
+
+function doSmth(a) {
+  for (var q=1, i=1; q<a.length; ++q) {
+    if (a[q] !== a[q-1]) {
+      a[i++] = a[q];
+    }
+  }
+
+  a.length = i;
+  return a;
+}
+
+class myBullet  {
+	x = 0
+	y = 0
+	alive = true
+	life = 0
+	rotation  = 0
+	speed = 2
+	constructor(x, y, rotation, life){
+		this.x = x
+		this.y = y
+		this.rotation = rotation 
+		this.life = life
+	}
+}
+
+class myCyrcle {
+	constructor(x, y, radius, route){
+		this.x = x
+		this.y = y
+		this.radius = radius
+		this.route = route
+	}
+	setRoute() {
+		this.route = this.route + 1
+		if (this.route > 359) this.route = 0
+	}
+
+	body = []
+	
+	leftBlock = false
+	rightBlock = false
+	upBlock = false
+	downBlock = false
+
+	rotateLeftBlock = false
+	rotateRightBlock = false
+
+	moveLeft = false
+	moveUp = false
+	moveBack = false
+	moveRight = false
+
+	rotateLeft = false
+	rotateRight = false
+
+	upLeftShoulder = {
+		x : this.x,
+		y : this.y
+	}
+
+	upRightShoulder = {
+		x : this.x,
+		y : this.y
+	}
+	
+	backLeftShoulder = {
+		x : this.x,
+		y : this.y
+	}
+
+	backRightShoulder = {
+		x : this.x,
+		y : this.y
+	}
+
+	bullets = []
+
+	rotateToRight(){
+		this.rotateRight = true
+	}
+	rotateToLeft(){
+		this.rotateLeft = true
+	}
+
+
+	rotateStopRight(){
+		this.rotateRight = false
+	}
+	rotateStopLeft(){
+		this.rotateLeft = false
+	}
+
+	foward(){
+		this.moveUp = true
+	}
+	foback(){
+		this.moveBack = true
+	}
+	foleft(){
+		this.moveLeft = true
+	}
+	foright(){
+		this.moveRight = true
+	}
+
+
+	stopUp(){
+		this.moveUp = false
+	}
+	stopBack(){
+		this.moveBack = false
+	}
+	stopLeft(){
+		this.moveLeft = false
+	}
+	stopRight(){
+		this.moveRight = false
+	}
+
+	fire(){
+		let playerBullet = new myBullet(this.x, this.y, this.route, 1)
+		this.bullets.push(playerBullet)
+	}
+
+
+	goUp(){
+		if (!this.upBlock){
+			this.y++
+		}
+	}
+	goDown(){
+		if (!this.downBlock){
+			this.y--
+		}
+	}
+
+	draw() {
+
+		let angleUpLeftShoulder = (this.route-60) * Math.PI/180;
+		let angleUpRightShoulder = (this.route+60) * Math.PI/180;
+		let angleBackLeftShoulder = (this.route-120) * Math.PI/180;
+		let angleBackRightShoulder = (this.route+120) * Math.PI/180;
+		
+		let controlXUpLeftShoulder = (this.x) + Math.cos(angleUpLeftShoulder) * 30
+		let controlYUpLeftShoulder = (this.y) + Math.sin(angleUpLeftShoulder) * 30
+		let controlXBackLeftShoulder = (this.x) + Math.cos(angleBackLeftShoulder) * 30
+		let controlYBackLeftShoulder = (this.y) + Math.sin(angleBackLeftShoulder) * 30
+
+		let controlXUpRightShoulder = (this.x) + Math.cos(angleUpRightShoulder) * 30
+		let controlYUpRightShoulder = this.y + Math.sin(angleUpRightShoulder) * 30
+		let controlXBackRightShoulder = (this.x) + Math.cos(angleBackRightShoulder) * 30
+		let controlYBackRightShoulder = this.y + Math.sin(angleBackRightShoulder) * 30
+
+		this.upLeftShoulder = {
+			x : controlXUpLeftShoulder,
+			y : controlYUpLeftShoulder
+		}
+
+		this.upRightShoulder = {
+			x : controlXUpRightShoulder,
+			y : controlYUpRightShoulder
+		}
+
+		this.backLeftShoulder = {
+			x : controlXBackLeftShoulder,
+			y : controlYBackLeftShoulder
+		}
+
+		this.backRightShoulder = {
+			x : controlXBackRightShoulder,
+			y : controlYBackRightShoulder
+		}
+
+		this.body = [
+			this.upLeftShoulder,
+			this.backLeftShoulder,
+			this.backRightShoulder,
+			this.upRightShoulder
+		]
+
+		//console.log(this.bullets)
+		for(let i=0; i<this.bullets.length; i++){
+			let bullet = this.bullets[i]
+			console.log(bullet)
+			if (bullet.alive){
+				let radian = (Math.PI / 180) * bullet.rotation
+				bullet.x += bullet.speed * Math.cos(radian)
+				bullet.y += bullet.speed * Math.sin(radian)
+			}
+			if (bullet.x < 1 || bullet.x > 400 || pointInPolygon(bullet)){
+				bullet.alive = false
+			}
+			if (bullet.y < 1 || bullet.y > 400){
+				bullet.alive = false
+			}
+
+		}
+
+		if (this.rotateLeft){
+			this.route = this.route - 1
+			if (this.route < 0) this.route = 359
+		}
+		if (this.rotateRight){
+			this.route = this.route + 1
+			if (this.route > 359) this.route = 0
+		}
+
+
+		if (this.moveUp){
+			//console.log("right : "+pointInPolygon(this.upRightShoulder))
+			//console.log("left : "+pointInPolygon(this.upLeftShoulder))
+
+			//console.log(pointInBody(segments[1].a.x,this.body))
+
+			let block = false
+			segments.filter(segment => {
+				//console.log(pointInBody(segment.a,this.body))
+				if (pointInBody(segment.a,this.body) == 1)
+					block = true
+			})
+
+			let myLeft = {x: controlXBackLeftShoulder, y: controlYBackLeftShoulder}
+			let myRight = {x: controlXBackRightShoulder, y: controlYBackRightShoulder}
+			
+			if (
+				!pointInPolygon(this.upRightShoulder) &&
+				!pointInPolygon(this.upLeftShoulder) &&
+				!block
+			){
+				let radians = (( Math.PI / 180) * this.route)
+				this.x +=  1 * Math.cos(radians)
+				this.y += 1 * Math.sin(radians)
+			}
+		} 
+		if (this.moveLeft){
+			let radians = (( Math.PI / 180) * (this.route - 90) )
+			this.x +=  1 * Math.cos(radians)
+			this.y += 1 * Math.sin(radians)
+		}
+		if (this.moveBack){
+			let radians = (( Math.PI / 180) * this.route)
+			this.x -=  1 * Math.cos(radians)
+			this.y -= 1 * Math.sin(radians)
+		} 
+		if (this.moveRight){
+			let radians = (( Math.PI / 180) * (this.route - 90) )
+			this.x -=  1 * Math.cos(radians)
+			this.y -= 1 * Math.sin(radians)
+		}
+
+		let dx = mouse.x - this.x;
+        let dy = mouse.y - this.y;
+		
+		let angle = this.route * Math.PI/180;
+		
+		let route2 = this.route + 30
+		if (route2 > 389){
+			route2 = 0
+		}
+		let angle2 = route2 * Math.PI/180;
+		
+		//рисуем круг
+		ctx.beginPath();
+        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2, true);
+        ctx.fillStyle = "rgb(255, 255, 240)";
+        ctx.fill();
+        ctx.closePath();
+		
+		
+		
+		//рисуем линию направления
+		ctx.fillStyle = "rgb(0, 0, 0)";
+		ctx.beginPath();
+		ctx.moveTo(this.x,this.y);
+		let controlX = this.x + Math.cos(angle)*this.radius
+		let controlY = this.y + Math.sin(angle)*this.radius
+		ctx.lineTo(controlX, controlY);  
+		ctx.stroke();
+		
+		//исуем вторую линию направления
+		ctx.fillStyle = "rgb(0, 0, 0)";
+		ctx.beginPath();
+		ctx.moveTo(this.x,this.y);
+		let controlX3 = this.x + Math.cos(angle2)*this.radius
+		let controlY3 = this.y + Math.sin(angle2)*this.radius
+		ctx.lineTo(controlX3, controlY3);  
+		ctx.stroke();
+
+		
+
+		
+		theta = Math.atan2(dy, dx);	
+		
+		let ddx = mouse.x - controlX3;
+        let ddy = mouse.y - controlY3;
+		
+		let dddx = mouse.x - controlX;
+        let dddy = mouse.y - controlY;
+		
+		let ddtheta = Math.atan2(ddy, ddx);	
+		let dddtheta = Math.atan2(dddy, dddx);	
+		
+		let radian = theta * 180 / Math.PI
+		if (radian <= 0){
+			let plus = radian * -1
+			let minus = 360 - plus
+			radian = minus 
+		}
+		//console.log('radian : ' + radian)
+		
+		
+		
+		//console.log('radian2 : ' + radian2)
+		
+		let border2 = route2
+		if (border2 > 360){
+			border2 = border2 - 360
+		}
+		//console.log('border 2 : ' + border2)
+		//console.log('border 1 : ' + this.route)
+		
+		
+		
+		//это пока не надо
+		let cos = Math.cos(theta),
+			cos_a1 = Math.cos(angle),
+			cos_a2 = Math.cos(angle2),
+			
+			sin = Math.sin(theta),
+			sin_a1 = Math.sin(angle),
+			sin_a2 = Math.sin(angle2)
+		
+		//if (cos > cos_a1) 
+			//cos = cos_a1
+		//else if (cos < cos_a2)
+			//cos = cos_a2
+		
+		//if (sin < sin_a1) 
+		//	sin = sin_a1
+		//else if (sin > sin_a2)
+		//	sin = sin_a2
+		let controlX2 = this.x
+		let controlY2 = this.y
+		if ((radian < route2 && radian > this.route) || (radian < border2 && radian < this.route && route2 > 360)){
+			ctx.fillStyle = "rgb(0, 0, 0)";
+			ctx.beginPath();
+			ctx.moveTo(this.x,this.y);
+			controlX2 = this.x + cos * this.radius ;
+			controlY2 = this.y + sin * this.radius ;
+			ctx.lineTo(controlX2, controlY2);  
+			ctx.stroke();
+		}
+		
+		
+		//рисуем Юзверя
+		ctx.beginPath();
+        ctx.arc(myUser.x, myUser.y, 10, 0, Math.PI * 2, true);
+         
+        if (myUser.visible)
+        	ctx.fillStyle = "rgb(0, 0, 0)";
+        else
+        	ctx.fillStyle = "rgba(0, 0, 0, 0.2)";
+        ctx.fill();
+        ctx.closePath();
+		
+		//console.log(Math.sqrt(Math.pow(this.x - myUser.x,2) + Math.pow(this.y - myUser.y,2)))
+		//console.log('my user : ')
+		//console.log('x : ' + myUser.x)
+		//console.log('y : ' + myUser.y)
+		//console.log('line 2 : ')
+		//console.log('x : ' + controlX3)
+		//console.log('y : ' + controlY3)
+		
+		/*if (
+				Math.sqrt(Math.pow(this.x - myUser.x,2) + Math.pow(this.y - myUser.y,2)) <= this.radius 
+			)
+		{
+			console.log('super')
+		}*/
+		
+		/*
+		let x1 = controlX3 - this.x
+		let	y1 = controlY3 - this.y
+		let	x2 = controlX - this.x
+		let	y2 = controlY - this.y
+		let	xa = myUser.x - this.x
+		let	ya = myUser.y - this.y
+		
+		let	s12 = Math.sign(x1 * y2 - y1 * x2)
+		let	s1a = Math.sign(x1 * ya - y1 * xa)
+		let	sa2 = Math.sign(xa * y2 - ya * x2)
+		
+		if (Math.sqrt(Math.pow(this.x - myUser.x,2) + Math.pow(this.y - myUser.y,2)) <= this.radius) {
+		    //console.log('nice')
+			if (s12 == s1a && s1a == sa2 ){
+				//console.log('----')
+				//console.log(s12)
+				//console.log(s1a)
+				//console.log(sa2)
+				//console.log('super')
+			}
+		}
+		*/
+		let itemPointOne = {x: controlX3, y: controlY3}
+		let itemPointTwo = {x: controlX, y:controlY}
+		//detectVision(this, itemPointOne, itemPointTwo, myUser, this.radius)
+		
+		//console.log('----')
+		//console.log(s12)
+		//console.log(s1a)
+		//console.log(sa2)
+		
+		//console.log('1 : '+theta)
+		//console.log('2 : '+theta2)
+		//var xFromCentre = mouse.x - this.x;
+        //var yFromCentre = mouse.y - this.y;
+		//var distanceFromCentre = Math.sqrt( Math.pow( Math.abs( xFromCentre ), 2) + Math.pow( Math.abs( yFromCentre ), 2));
+		//console.log(distanceFromCentre)
+		//console.log(this.x + Math.cos(theta2) * this.radius)
+		
+		
+		
+		
+	// WORK
+	/*var ray = {
+		a:{x:this.x,y:this.y},
+		b:{x:controlX2,y:controlY2}
+	};
+	
+	// Find CLOSEST intersection
+	var closestIntersect = null;
+	for(var i=0;i<segments.length;i++){
+		var intersect = getIntersection(ray,segments[i]);
+		if(!intersect) continue;
+		if(!closestIntersect || intersect.param<closestIntersect.param){
+			closestIntersect=intersect;
+		}
+	}
+	var intersect = closestIntersect;
+
+	// Draw red laser
+	ctx.strokeStyle = "#dd3838";
+	ctx.beginPath();
+	ctx.moveTo(this.x, this.y);
+	
+	let tdx = intersect.x - this.x;
+    let tdy = intersect.y - this.y;
+	
+	let ttheta = Math.atan2(tdy, tdx);	
+	
+	let tcos = Math.cos(theta),	
+		tsin = Math.sin(theta)
+
+	if (tdx > this.radius) tdx = this.radius
+		
+	let testX = this.x + tcos * tdx ;
+	let testY = this.y + tsin * tdx ;
+	
+	ctx.lineTo(testX, testY);  
+	
+	ctx.stroke();
+	
+	// Draw red dot
+	ctx.fillStyle = "#dd3838";
+	ctx.beginPath();
+    ctx.arc(testX, testY, 4, 0, 2*Math.PI, false);
+	ctx.arc(intersect.x, intersect.y, 4, 0, 2*Math.PI, false);
+    ctx.fill();
+	
+	}*/
+	
+	// 50 RAYS IN ALL DIRECTIONS
+	var intersects = [];
+		var myLines = [];
+		
+		for(var angleMass=this.route; angleMass < border2; angleMass+=10){
+			
+			// Calculate dx & dy from angle
+			angle = angleMass * Math.PI/180;
+			
+			var dxMass = Math.cos(angle);
+			var dyMass = Math.sin(angle);
+
+			// Ray from center of screen to mouse
+			var ray = {
+				a:{x:this.x, y:this.y},
+				b:{x:this.x + dxMass, y:this.y + dyMass}
+			};
+
+			// Find CLOSEST intersection
+			var closestIntersect = null;
+			for(var i=0; i<segments.length; i++){
+				var intersect = getIntersection(ray,segments[i], this.radius);
+				if(!intersect) continue;
+				if(!closestIntersect || intersect.param<closestIntersect.param){
+					intersect.Angle = angle
+					closestIntersect=intersect;
+				}
+			}
+			
+			//intersects.push(closestIntersect);
+			myLines.push(closestIntersect);
+		}
+		//console.log(myLines)
+
+
+		
+		// DRAW ALL RAYS
+		ctx.strokeStyle = "#dd3838";
+		ctx.fillStyle = "#dd3838";
+
+
+		
+		for(var i=0;i<intersects.length;i++){
+
+			
+			var intersect = intersects[i];
+			// Draw red laser
+			ctx.beginPath();
+			ctx.moveTo(this.x,this.y);
+			ctx.lineTo(intersect.x,intersect.y);
+			ctx.stroke();
+			/*
+			// Draw red dot
+			ctx.beginPath();
+			ctx.arc(intersect.x, intersect.y, 4, 0, 2*Math.PI, false);
+			ctx.fill();
+			*/
+		}
+		
+		
+		
+		// BACKGROUND
+		/*
+		// DRAW AS A GIANT POLYGON
+		ctx.fillStyle = "#f55";
+		ctx.beginPath();
+		ctx.moveTo(intersects[0].x,intersects[0].y);
+		for(var i=1;i<intersects.length;i++){
+			var intersect = intersects[i];
+			ctx.lineTo(intersect.x,intersect.y);
+		}
+		ctx.fill();
+
+		// DRAW DEBUG LINES
+		ctx.strokeStyle = "#f55";
+		for(var i=0;i<intersects.length;i++){
+			var intersect = intersects[i];
+			ctx.beginPath();
+			ctx.moveTo(this.x,this.y);
+			ctx.lineTo(intersect.x,intersect.y);
+			ctx.stroke();
+		}
+		*/
+		
+		
+		// FINAL
+		
+		// DRAW ALL RAYS
+		/*ctx.strokeStyle = "#dd3838";
+		ctx.fillStyle = "#dd3838";
+		for(var i=0;i<intersects.length;i++){
+
+			var intersect = intersects[i];
+
+			let itemPointOne = {x: controlX3, y: controlY3}
+			let itemPointTwo = {x: controlX, y:controlY}
+			let enemy = {x: intersect.x, y: intersect.y}
+			
+			//if (detectVision(this, itemPointOne, itemPointTwo, enemy, myRadius)){
+
+				// Draw red laser
+				ctx.beginPath();
+				ctx.moveTo(this.x,this.y);
+				ctx.lineTo(intersect.x,intersect.y);
+				ctx.stroke();
+				
+				// Draw red dot
+				ctx.beginPath();
+				ctx.arc(intersect.x, intersect.y, 4, 0, 2*Math.PI, false);
+				ctx.fill();
+			//}
+		
+		}*/
+		
+		
+		
+		
+		ctx.strokeStyle = "#999";
+		for(var i=0;i<segments.length;i++){
+			var seg = segments[i];
+			ctx.beginPath();
+			ctx.moveTo(seg.a.x,seg.a.y);
+			ctx.lineTo(seg.b.x,seg.b.y);
+			ctx.stroke();
+		}
+
+		// Get all unique points
+		var points = (function(segments){
+			var a = [];
+			segments.forEach(function(seg){
+				a.push(seg.a,seg.b);
+			});
+			return a;
+		})(segments);
+		
+		let THis = this
+		
+		
+		var uniquePoints = (function(points){
+			var set = {};
+			return points.filter(function(p){
+					//console.log(Math.atan2(p.y-THis.y, p.x-THis.x)) 
+					//if (Math.atan2(p.y-THis.y, p.x-THis.x) < Math.atan2(controlY-THis.y, controlX-THis.x))
+					//{
+						var key = p.x+","+p.y;
+						if(key in set){
+							return false;
+						}else{
+							set[key]=true;
+							return true;
+						}
+					//}
+			});
+		})(points);
+
+		// Get all angles
+		var uniqueAngles = [];
+		//console.log(uniquePoints)
+		
+
+		// visible lines
+
+		uniquePoints.push({
+			start: 'one',
+			x: controlX,
+			y: controlY,
+			Angle: Math.atan2(controlY+1,controlX+1)
+		})
+		uniquePoints.push({
+			start : 'two',
+			x: controlX3,
+			y: controlY3,
+			Angle: Math.atan2(controlY3,controlX3)
+		})
+		
+		/*uniquePoints.push({
+			start : 'center',
+			x: this.x+0.0002,
+			y: this.y+0.0002,
+			Angle: 3.14
+		})
+		uniquePoints.push({
+			start : 'center2',
+			x: this.x-0.0002,
+			y: this.y-0.0002,
+			Angle: -3.14
+		})*/
+		
+		myLines.filter(myLine => {
+			//console.log(myLine)
+			if (!uniquePoints.includes(myLine))
+				uniquePoints.push(myLine)
+		})
+
+		//test collision 
+		let leftBorder = {x:controlX, y:controlY}
+		let rightBorder = {x:controlX3, y:controlY3}
+		segments.filter(segment => {
+
+			let newLine = myCollision(leftBorder, rightBorder, segment)
+			if (newLine){
+				let newAngle = Math.atan2(newLine.y-this.y,newLine.x-this.x)
+				newLine.Angle=newAngle
+				uniquePoints.push(newLine)
+			}
+		})
+
+		var reverse = false
+		for(var j=0;j<uniquePoints.length;j++){
+		
+			var uniquePoint = uniquePoints[j];
+			var Angle = Math.atan2(uniquePoint.y-this.y,uniquePoint.x-this.x);
+			uniquePoint.Angle = Angle;
+			
+			let testAngle = (Math.atan2(uniquePoint.y-this.y,uniquePoint.x-this.x)) * 180 / Math.PI
+			if (testAngle < 0){
+				let plus = testAngle * -1
+				let minus = 359 - plus
+				testAngle = minus 
+			}
+			let testBorder1 = (Math.atan2(controlY-this.y,controlX-this.x)) * 180 / Math.PI
+			if (testBorder1 < 0){
+				let plus = testBorder1 * -1
+				let minus = 359 - plus
+				testBorder1 = minus 
+			}
+			let testBorder2 = (Math.atan2(controlY3-this.y,controlX3-this.x)) * 180 / Math.PI
+			if (testBorder2 < 0){
+				let plus = testBorder2 * -1
+				let minus = 359 - plus
+				testBorder2 = minus 
+			}
+			//console.log('Angle 1 : ' + testAngle)
+			//console.log('border 1 : ' + testBorder1)
+			//console.log('border 2 : ' + testBorder2)
+			//uniqueAngles.push(Angle-0.00001,Angle,Angle+0.00001);
+			if (testAngle < testBorder2){
+				//uniqueAngles.push(Angle-0.00001,Angle,Angle+0.00001);
+				//uniqueAngles.push(Math.atan2(controlY-this.y,controlX-this.x)-0.00001,Math.atan2(controlY-this.y,controlX-this.x),Math.atan2(controlY-this.y,controlX-this.x)+0.00001);
+				//uniqueAngles.push(Math.atan2(controlY3-this.y,controlX3-this.x)-0.00001,Math.atan2(controlY3-this.y,controlX3-this.x),Math.atan2(controlY3-this.y,controlX3-this.x)+0.00001);
+			} 
+			if (testAngle >= testBorder1 && testAngle >= testBorder2){
+				//uniqueAngles.push(Angle-0.00001,Angle,Angle+0.00001);
+				//uniqueAngles.push(Math.atan2(controlY-this.y,controlX-this.x)-0.00001,Math.atan2(controlY-this.y,controlX-this.x),Math.atan2(controlY-this.y,controlX-this.x)+0.00001);
+				//uniqueAngles.push(Math.atan2(controlY3-this.y,controlX3-this.x)-0.00001,Math.atan2(controlY3-this.y,controlX3-this.x),Math.atan2(controlY3-this.y,controlX3-this.x)+0.00001);
+			}
+			
+			
+			uniqueAngles.push(Angle-0.00001,Angle,Angle+0.00001);
+			
+			//if (testBorder1 < testBorder2){
+			
+				if (
+					Angle >= Math.atan2(controlY-this.y,controlX-this.x)
+					)
+				{
+					//uniqueAngles.push(Angle-0.00001,Angle,Angle+0.00001);
+				} else if (
+					Angle <= Math.atan2(controlY3-this.y,controlX3-this.x)
+						&& Math.atan2(controlY3-this.y,controlX3-this.x) < 0
+				){
+					//uniqueAngles.push(Angle-0.00001,Angle,Angle+0.00001);
+				}
+			
+				if 	(
+						((Angle >= Math.atan2(controlY-this.y,controlX-this.x)) 
+						&& Angle <= Math.atan2(controlY3-this.y,controlX3-this.x))
+					) 
+				{
+					//uniqueAngles.push(Angle-0.00001,Angle,Angle+0.00001);
+					reverse = false
+				} 
+				if (
+						((Angle <= Math.atan2(controlY-this.y,controlX-this.x)) &&
+						Angle >= Math.atan2(controlY3-this.y,controlX3-this.x)) /*&& 
+						uniquePoint.start*/
+					)
+				{
+					//console.log(uniquePoint)
+					//uniqueAngles.push(Angle-0.00001,Angle,Angle+0.00001);
+					//console.log(Angle)
+					//console.log(Math.atan2(controlY3-this.y,controlX3-this.x) + " / " + Angle + " / " + Math.atan2(controlY-this.y,controlX-this.x))
+					
+					//uniqueAngles.push(Angle-0.00001,Angle,Angle+0.00001);
+					reverse = true
+				}
+				
+				/*if ( 
+					(testAngle >= testBorder1 && testAngle <= testBorder2) 
+					|| uniquePoint.start 
+					)
+				{
+					uniqueAngles.push(Angle-0.00001,Angle,Angle+0.00001);
+				}*/
+				
+			//} else if (testBorder1 > testBorder2){
+				//console.log('Angle 1 : ' + testAngle)
+				//console.log('border 1 : ' + testBorder1)
+				//console.log('border 2 : ' + testBorder2)
+			//	if ( (testAngle >= testBorder1 && testAngle <= testBorder2) || uniquePoint.start){
+			//		uniqueAngles.push(Angle-0.00001,Angle,Angle+0.00001);
+			//	}
+			//	if (testAngle <= testBorder2 || uniquePoint.start){
+					//uniqueAngles.push(Angle-0.00001,Angle,Angle+0.00001);
+			//	}
+				//console.log(testAngle)
+			//}
+		}
+
+		// RAYS IN ALL DIRECTIONS
+		//var intersects = [];
+		
+		myLines.filter(myLine => {
+			//uniqueAngles.push(myLine.Angle-0.00001,myLine.Angle,myLine.Angle+0.00001)
+		})
+
+
+		
+
+		for(var j=0;j<uniqueAngles.length;j++){
+			var Angle = uniqueAngles[j];
+
+			// Calculate dx & dy from angle
+			var dX = Math.cos(Angle);
+			var dY = Math.sin(Angle);
+			//console.log(Angle)
+			
+			let borderLeftDX = Math.cos(Math.atan2(controlY-this.y,controlX-this.x))
+			let borderLeftDY = Math.sin(Math.atan2(controlY-this.y,controlX-this.x))
+			let borderRightDX = Math.cos(Math.atan2(controlY3-this.y,controlX3-this.x))
+			let borderRightDY = Math.sin(Math.atan2(controlY3-this.y,controlX3-this.x))
+			
+			
+			//console.log(dX)
+			//if (dX <= borderLeftDX && dY <= borderLeftDY){
+			
+			/*//if (Angle < 3.14 && Angle < 0)
+			if ( 
+				(
+				(Angle >= Math.atan2(controlY-this.y,controlX-this.x))
+				
+				//&& Math.atan2(controlY3-this.y,controlX3-this.x) < 0) 
+				//||
+				//Angle <= Math.atan2(controlY3-this.y,controlX3-this.x)
+				//&& Math.atan2(controlY3-this.y,controlX3-this.x) < 0
+				)
+				//&& Math.atan2(controlY-this.y,controlX-this.x) > 0
+			) {*/
+
+			// Ray from center of screen to mouse
+			
+			var ray = {
+				a:{x:this.x,y:this.y},
+				b:{x:this.x+dX,y:this.y+dY}
+			};
+
+			// Find CLOSEST intersection
+			var closestIntersect = null;
+			for(var i=0; i<segments.length; i++){
+				var intersect = getIntersection(ray,segments[i], this.radius);
+				if(!intersect) continue;
+				if(!closestIntersect || intersect.param<closestIntersect.param){
+					closestIntersect=intersect;
+				}
+			}
+
+			// Intersect angle
+			if(!closestIntersect) continue;
+			closestIntersect.Angle = Angle;
+			
+			
+
+			// Add to list of intersects
+			intersects.push(closestIntersect);
+			//}
+
+		}
+
+		//console.log(intersects)
+		// Sort intersects by angle
+		//console.log(intersects)
+		/*intersects.push({
+			x: this.x,
+			y: this.y,
+			param: 10,
+			Angle: -0.00002
+		})*/
+		let mainIntersects = intersects.sort(function(a,b){
+			return a.Angle-b.Angle;
+		});
+		
+		/*intersects.unshift({
+			x: controlX,
+			y: controlY,
+			param: 10,
+			Angle: -3
+		})*/
+
+		//console.log(reverse)
+		/*if (!reverse)
+		mainIntersects.unshift({
+			x: this.x,
+			y: this.y,
+			param: 10,
+			Angle: -3.14
+		})*/
+		/*mainIntersects.push({
+			x: this.x,
+			y: this.y,
+			param: 10,
+			Angle: 40
+		})*/
+
+
+		// DRAW AS A GIANT POLYGON
+		ctx.fillStyle = "rgba(0,0,250,0.2)";
+		
+		itemPointOne = {x: controlX3, y: controlY3}
+		itemPointTwo = {x: controlX, y:controlY}
+		
+		
+		/*let newIntersects = []
+		intersects.filter( inter => {
+			let enemy = {x: inter.x, y: inter.y}
+			if (detectVision(this, itemPointOne, itemPointTwo, enemy, this.radius)){
+				newIntersects.push(inter)
+			}
+		})*/
+		
+		
+		
+		/*
+		//if (detectVision(this, itemPointOne, itemPointTwo, enemy, this.radius)){
+			ctx.beginPath();
+			if (mainIntersects[0])
+			ctx.moveTo(mainIntersects[0].x,mainIntersects[0].y);
+			for(var i=1;i<mainIntersects.length;i++){
+				var intersect = mainIntersects[i];
+				ctx.lineTo(intersect.x,intersect.y);
+			}
+			ctx.fill();
+		//}
+
+		// DRAW DEBUG LINES
+		ctx.strokeStyle = "rgba(220,220,220,1)";
+		//console.log(intersects)
+		for(var i=0;i<mainIntersects.length;i++){
+			var intersect = mainIntersects[i];
+			
+			itemPointOne = {x: controlX3, y: controlY3}
+			itemPointTwo = {x: controlX, y:controlY}
+			let enemy = {x: intersect.x, y: intersect.y}
+			
+			//if (detectVision(this, itemPointOne, itemPointTwo, enemy, this.radius)){
+				//ctx.fillText(Math.ceil(intersect.x), intersect.x, intersect.y);
+				ctx.fillText(i, intersect.x, intersect.y+10);
+				ctx.beginPath();
+				ctx.moveTo(this.x,this.y);
+				ctx.lineTo(intersect.x,intersect.y);
+				ctx.stroke();
+			//}
+		}
+		ctx.strokeStyle = "#f00";
+		
+		
+		
+		//REVERSE 
+		let reverseIntersects = intersects.sort(function(a,b){
+			return a.Angle-b.Angle;
+		});
+		
+		reverseIntersects = reverseIntersects.reverse()
+		
+		//console.log(reverseIntersects.length)
+		ctx.fillStyle = "rgba(250,0,0,0.2)";
+		ctx.beginPath();
+		if (reverseIntersects[reverseIntersects.length-1])
+		ctx.moveTo(reverseIntersects[reverseIntersects.length-1].x,reverseIntersects[reverseIntersects.length-1].y);
+		
+		for(var i=reverseIntersects.length-1; i>1; i--){
+			//console.log(i)
+			var intersect = reverseIntersects[i];
+			ctx.fillText(i, intersect.x, intersect.y);
+			ctx.lineTo(intersect.x,intersect.y);
+		}
+		
+		ctx.fill();
+		
+		/*for(var i=reverseIntersects.length;i>0;i--){
+			var intersect = reverseIntersects[i];
+			if (intersect){
+			ctx.fillText(intersect.Angle, intersect.x, intersect.y);
+			ctx.beginPath();
+			ctx.moveTo(this.x,this.y);
+			ctx.lineTo(intersect.x,intersect.y);
+			ctx.stroke();
+			}
+		}*/
+		
+		
+		
+		
+		
+		
+		//TEST
+		
+		//ctx.fillStyle = "rgba(0,0,0,1)";
+		//ctx.moveTo(mainIntersects[mainIntersects.length-1].x,mainIntersects[mainIntersects.length-1].y);
+		//ctx.lineTo(this.x,this.y);
+		//ctx.lineTo(mainIntersects[0].x,mainIntersects[0].y);
+		//ctx.fill();
+		
+		//console.log('LEFT : ' + Math.atan2(controlY-this.y,controlX-this.x))
+		//console.log('RIGHT GROSS : ' + Math.atan2(controlY3-this.y,controlX3-this.x))
+		
+		
+		/*ctx.fillStyle = "rgba(0,250,0,0.2)";
+		ctx.beginPath();
+		ctx.moveTo(mainIntersects[0].x,mainIntersects[0].y);
+		for(var i=1;i<mainIntersects.length;i++){
+			var intersect = mainIntersects[i];
+			var prevIntersect = mainIntersects[i-1]
+			if (mainIntersects[i+1])
+			var prevIntersect = mainIntersects[i+1]
+			if (prevIntersect.Angle < intersect.Angle)
+				ctx.lineTo(intersect.x,intersect.y);
+		}
+		ctx.lineTo(this.x,this.y);
+		ctx.fill();*/
+		
+		
+		/*ctx.fillStyle = "rgba(250,0,0,0.2)";
+		ctx.beginPath();
+		//ctx.moveTo(this.x,this.y);
+		ctx.moveTo(mainIntersects[0].x,mainIntersects[0].y);
+		let last = false
+		for(var i=1;i<mainIntersects.length;i++){
+			var intersect = mainIntersects[i];
+			if (intersect.Angle >= 0){
+				ctx.lineTo(this.x,this.y);
+				ctx.lineTo(intersect.x,intersect.y);
+			}
+			
+			if (intersect.Angle <= 0){
+				//ctx.lineTo(this.x,this.y);
+				ctx.lineTo(intersect.x,intersect.y);
+				last = true
+			}
+		}*/
+		
+		
+		//ctx.lineTo(this.x,this.y);
+		ctx.fill();
+		
+		let borderRight = Math.atan2(controlY3 - this.y, controlX3-this.x),
+			borderLeft = Math.atan2(controlY - this.y, controlX-this.x)
+			
+		let controlPoint = [],
+			redPoint = [],
+			greenPoint = []
+		
+		if (!reverse){
+			ctx.beginPath();
+			ctx.moveTo(this.x,this.y);
+		}
+		myUser.visible = false
+		
+		for(var i=0;i<mainIntersects.length;i++){
+			var intersect = mainIntersects[i];
+
+			//if (intersect.Angle >= 0){
+				if (reverse)
+					ctx.beginPath();
+				
+				if (borderRight <= 0 && borderLeft >= 0){
+					if ( intersect.Angle >= 0 &&
+						borderLeft >=0 &&
+						intersect.Angle >= borderLeft /*&&
+						intersect.Angle <= borderRight*/
+					){
+						//ctx.strokeStyle = "#f00";
+						ctx.moveTo(this.x,this.y);
+						ctx.lineTo(intersect.x,intersect.y);
+						ctx.stroke();
+						
+						let newIntersect = {}
+						newIntersect.x = intersect.x
+						newIntersect.y = intersect.y
+						newIntersect.angle = intersect.Angle
+						newIntersect.color = "red"
+						controlPoint.push(newIntersect)
+						redPoint.push(intersect)
+						
+						if (i>0){
+							let itemPointOne = {x:  mainIntersects[i-1].x, y:  mainIntersects[i-1].y}
+							let itemPointTwo = {x:  mainIntersects[i].x, y: mainIntersects[i].y}
+							if (detectVision(this, itemPointOne, itemPointTwo, myUser, this.radius)){
+								myUser.visible = true
+							} 
+						}
+
+					} else if (
+						intersect.Angle <= 0 &&
+						borderRight <= 0 &&
+						intersect.Angle <= borderRight
+					){
+
+						//ctx.strokeStyle = "#0f0";
+						ctx.moveTo(this.x,this.y);
+						ctx.lineTo(intersect.x,intersect.y);
+						ctx.stroke();
+						
+						let newIntersect = {}
+						newIntersect.x = intersect.x
+						newIntersect.y = intersect.y
+						newIntersect.angle = intersect.Angle
+						newIntersect.color = "green"
+						controlPoint.push(newIntersect)
+						greenPoint.push(intersect)
+
+						if (i>0){
+							let itemPointOne = {x:  mainIntersects[i-1].x, y:  mainIntersects[i-1].y}
+							let itemPointTwo = {x:  mainIntersects[i].x, y: mainIntersects[i].y}
+							if (detectVision(this, itemPointOne, itemPointTwo, myUser, this.radius)){
+								myUser.visible = true
+							} 
+						}
+					} 
+				} else {
+					if (
+						intersect.Angle >= borderLeft &&
+						intersect.Angle <= borderRight
+					)
+					{
+						ctx.lineTo(intersect.x,intersect.y);
+						if (i>0){
+							let itemPointOne = {x:  mainIntersects[i-1].x, y:  mainIntersects[i-1].y}
+							let itemPointTwo = {x:  mainIntersects[i].x, y: mainIntersects[i].y}
+							if (detectVision(this, itemPointOne, itemPointTwo, myUser, mainIntersects[i].param)){
+								myUser.visible = true
+							} 
+						}
+					} else {
+						
+					}
+				}
+				
+			//}
+
+		}
+		ctx.fill();
+		
+		//console.log('green : ' )
+		//console.log(greenPoint)
+		//console.log('red : ')
+		//console.log(redPoint)
+		
+		//ctx.fillStyle = "rgba(250,250,0,0.5)";
+		ctx.beginPath();
+		ctx.moveTo(this.x,this.y);
+		
+		if (redPoint.length > 2){
+			for(var i=0;i<redPoint.length;i++){
+				let intersect = redPoint[i];
+				ctx.lineTo(intersect.x,intersect.y);
+			}
+		}
+		else if (redPoint.length==2){
+			ctx.lineTo(redPoint[0].x,redPoint[0].y);
+		}
+		
+		if (greenPoint.length > 2){
+			for(var i=0;i<greenPoint.length;i++){
+				let intersect = greenPoint[i];
+				ctx.lineTo(intersect.x,intersect.y);
+			}
+			
+		} else if (greenPoint.length==2){
+			ctx.lineTo(greenPoint[0].x,greenPoint[0].y);
+		}
+		
+		
+		
+		ctx.fill();
+		ctx.closePath();
+
+		// рисуем плечи 
+
+		ctx.beginPath();
+		ctx.moveTo(this.x, this.y);
+		ctx.lineTo(this.upLeftShoulder.x, this.upLeftShoulder.y);  
+		ctx.closePath();
+		ctx.stroke();
+
+		ctx.beginPath();
+		ctx.moveTo(this.x, this.y);
+		ctx.lineTo(this.upRightShoulder.x, this.upRightShoulder.y);  
+		ctx.closePath();
+		ctx.stroke();
+
+		ctx.beginPath();
+		ctx.moveTo(this.x, this.y);
+		ctx.lineTo(this.backLeftShoulder.x, this.backLeftShoulder.y);  
+		ctx.closePath();
+		ctx.stroke();
+
+		ctx.beginPath();
+		ctx.moveTo(this.x, this.y);
+		ctx.lineTo(this.backRightShoulder.x, this.backRightShoulder.y);  
+		ctx.closePath();
+		ctx.stroke();
+
+		ctx.beginPath();
+		ctx.moveTo(this.upLeftShoulder.x, this.upLeftShoulder.y);
+		ctx.lineTo(this.backLeftShoulder.x, this.backLeftShoulder.y); 
+		ctx.lineTo(this.backRightShoulder.x, this.backRightShoulder.y);
+		ctx.lineTo(this.upRightShoulder.x, this.upRightShoulder.y);
+		ctx.closePath();
+		ctx.stroke(); 
+
+		// рисуем пули
+		this.bullets.filter(bullet => {
+			if (bullet.alive){
+				ctx.beginPath();
+		        ctx.arc(bullet.x, bullet.y, 5, 0, Math.PI * 2, true);
+		        ctx.fillStyle = "rgb(0, 255, 0)";
+		        ctx.fill();
+		        ctx.closePath();
+			}
+		})
+		
+	}
+}
+
+class Eye {
+    constructor(x, y, radius) {
+        this.x = x;
+        this.y = y;
+        this.radius = radius;
+	}
+    draw() {
+        let dx = mouse.x - this.x;
+        let dy = mouse.y - this.y;
+        theta = Math.atan2(dy, dx);	
+		//console.log('theta')
+		//console.log(theta)
+		
+		let angle = myAngle * Math.PI/180;
+		let angle2 = myAngle2 * Math.PI/180;
+		  //console.log('angle')
+		  //console.log(angle)
+		  //console.log('angle2')
+		  //console.log(angle2)
+		  
+		  //if(theta < angle && theta < angle2) console.log(theta) //theta = angle
+		  //if(theta > angle2) theta = angle2
+		
+        // глаз
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2, true);
+        ctx.fillStyle = "rgb(51, 122, 183)";
+        ctx.fill();
+        ctx.closePath();
+		
+        // радужная оболочка
+        let iris_x = this.x + Math.cos(theta) * this.radius / 10;
+        let iris_y = this.y + Math.sin(theta) * this.radius / 10;
+        let irisRadius = this.radius / 1.2;
+        ctx.beginPath();
+        ctx.arc(iris_x, iris_y, irisRadius, 0, Math.PI * 2, true);
+        ctx.fillStyle = "white";
+        ctx.fill();
+        ctx.closePath();
+		
+		let myCos = Math.cos(theta)
+		let mySin = Math.sin(theta)
+		//console.log('myCos')
+		//console.log(myCos)
+		//console.log('mySin')
+		//console.log(mySin)
+		
+        // зрачок
+        let pupilRadius = this.radius / 2.5;
+        let pupil_x = this.x + myCos * this.radius / 1.9;
+        let pupil_y = this.y + mySin * this.radius / 1.9;
+        ctx.beginPath();
+        ctx.arc(pupil_x, pupil_y, pupilRadius, 0, Math.PI * 2, true);
+        ctx.fillStyle = "black";
+        ctx.fill();
+        ctx.closePath();
+		
+		//ctx.moveTo(this.x, this.y); //передвигаем перо
+		//ctx.lineTo(this.x + this.radius, this.y); //рисуем линию
+		//ctx.stroke();
+		
+	
+		//if (iris_x < 200) iris_x = 200
+		
+        // отражение зрачка
+        ctx.beginPath();
+        ctx.arc(pupil_x - pupilRadius / 3, pupil_y - pupilRadius / 3, pupilRadius / 2, 0, Math.PI * 2, true);
+        ctx.fillStyle = "rgb(255,255,255)";
+        ctx.fill();
+        ctx.closePath();
+		
+		drawMyLine(this.x, this.y, myAngle, this.radius)
+		drawMyLine(this.x, this.y, myAngle2, this.radius)
+		  
+		
+		
+	}
+}
+
+var detect_radius = function (x, y, X, Y, r) {
+	"use strict";
+	return Math.sqrt(Math.pow(x - X,2) + Math.pow(y - Y,2)) <= r;
+};
+var detect_square = function(x,y,X,Y,kx,ky,W,H){ 
+    "use strict";
+	var ux, uy, vx, vy, px, py, w, h;
+	ux = kx*H;
+	uy = ky*H;
+	vx = -1*uy*W;
+	vy = ux*W;
+	px = x - X;
+	py = y - Y;
+	w = Math.abs(px*vx+py*vy)/Math.sqrt(Math.pow(vx,2) + Math.pow(vy,2));
+	h = Math.abs(px*ux+py*uy)/Math.sqrt(Math.pow(ux,2) + Math.pow(uy,2));
+	if(w <= W && h <= H){
+	    return true;
+	}
+    else {
+	    return false;
+    }	
+};
+
+/*
+defender class, create a defender object from this class
+usage: defender( starting x position, starting y position, type of defender from 0 to 1 )
+*/
+var Defender = function (x, y, Num){
+	"use strict";	
+    // private properties of defender
+	this.type = Num;
+    this.posX = x;
+	this.posY = y;
+	this.smokecount = 100;
+	this.image = new Image();	
+	this.image.src = "Graphics/bunker" + Num + ".png";	
+	this.image2 = new Image();	
+    this.image2.src = "Graphics/" + this.smokecount + ".png";	
+	this.radius = defenderdata[Num][0];
+	this.live = defenderdata[Num][1];
+	this.maxlive = this.live;
+	this.turret = new Turret(x - 1, y, defenderdata[Num][2]);
+	// this method setup this defender on canvas
+	this.set = function () {
+		if(this.type == 0){
+			ctx.drawImage(this.image, this.posX - 30, this.posY - 30);
+		}
+		else{
+			ctx.drawImage(this.image, this.posX - 52, this.posY - 52);
+		}
+		this.turret.set();
+		if (this.live <= this.maxlive/2) {
+			ctx.translate(Math.round(this.posX),Math.round(this.posY));
+			ctx.drawImage(this.image2, Math.round(this.image2.width/-2), Math.round(-1*this.image2.height));
+			ctx.setTransform(1,0,0,1,0,0);  	
+			this.smokecount = this.smokecount + 1;
+			this.image2.src = "Graphics/" + this.smokecount + ".png";	
+			if (this.smokecount == 115) {
+				this.smokecount = 99;
+			}	
+		}
+	};
+};
+
+
+function init() {
+    eyes = [];
+    let overlapping = false;
+    let numberOfEyes = 1 //Math.random()*40+50; // Кол-во глаз
+    let protection = 10000;
+    let counter = 0;
+    while (eyes.length < numberOfEyes && counter < protection) {
+        let eye = {
+            x: Math.random() * canvas.width,
+            y: Math.random() * canvas.height,
+            radius: Math.floor(Math.random() * 140) + 10 // радиус глаз
+		};
+        overlapping = false;
+        for (let i = 0; i < eyes.length; i++) {
+            let previousEye = eyes[i];
+            let dx = eye.x - previousEye.x;
+            let dy = eye.y - previousEye.y;
+            let distance = Math.sqrt(dx * dx + dy * dy);
+            if (distance < (eye.radius + previousEye.radius)) {
+                overlapping = true;
+                break;
+			}
+		}
+        if (!overlapping) {
+            eyes.push(new Eye(eye.x, eye.y, eye.radius));
+		}
+        counter++;
+	}
+
+	
+	myChildren = new myCyrcle(100, 100, 50, 0)
+	myChildren.draw()
+}
+
+
+
+function animate() {
+    //requestAnimationFrame(animate);
+    ctx.fillStyle = "rgb(191, 226, 255)";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    for (let i = 0; i < eyes.length; i++) {
+        eyes[i].draw();
+	}
+	for(var i=0;i<segments.length;i++){
+		var seg = segments[i];
+		ctx.beginPath();
+		ctx.moveTo(seg.a.x,seg.a.y);
+		ctx.lineTo(seg.b.x,seg.b.y);
+		ctx.stroke();
+	}	
+	drawing()
+	//var tempA
+	//tempA = player.turret.angle;
+	//player.turret = new Turret(player.posX, player.posY, 4);
+	//player.turret.angle = tempA;
+	//player.turret.aim();
+	//player.set();
+	/*if (player.live <= 0) {
+		explosions.push(new Explosion(player.posX, player.posY, 10, 31, 0,0));
+		smokes.push(new Explosion(player.posX, player.posY, 32, 47, 2,0));
+		wracks.push(new Wrack(player.posX, player.posY, player.angle, 0));
+		dead = true;
+		player = 0;
+		action = 0;
+		waiting = true;
+	}*/
+	//player.turret.targetAngle = Math.atan2(mouse.x - canvas.offsetLeft - player.posX*3/4, player.posY*3/4 + canvas.offsetTop - mouse.y);
+	//console.log(player.turret.targetAngle)
+
+}
+
+setInterval(() => animate(), 20);
+
+init();
+//animate();
+window.addEventListener("resize", function () {
+	canvas.width = canvas.offsetWidth;
+	canvas.height = canvas.offsetHeight;
+    init();
+})
+
+
+var drawing = function () {
+	"use strict";
+    var i, tempA;
+	//clear and redraw canvas for each frame
+    //ctx.clearRect(0,0,canvas.width,canvas.height);
+	//let myChildren = new myCyrcle(100, 100, 90, 120)
+	myChildren.draw()
+};
+
+</script>
+

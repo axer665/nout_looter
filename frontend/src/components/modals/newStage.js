@@ -64,7 +64,7 @@ function NewStage(props) {
 
       <Modal show={show} onHide={handleClose} animation={false}>
         <Modal.Header closeButton>
-          <Modal.Title> Создание раздела </Modal.Title>
+          <Modal.Title> Создание стадии проектирования </Modal.Title>
         </Modal.Header>
         <Modal.Body>
             <table className="table-create">

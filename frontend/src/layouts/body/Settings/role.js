@@ -3,7 +3,7 @@ import Axios from 'axios'
 import {Link} from 'react-router-dom'
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faPen, faCheck, faXmark } from '@fortawesome/free-solid-svg-icons'
+import { faPen, faCheck, faXmark, faTrash } from '@fortawesome/free-solid-svg-icons'
 
 import Informer from './../../../components/informer/main'
 import ApiSettings from './../../../api/Settings'
@@ -13,7 +13,7 @@ class settingsTemplates extends React.Component {
         super(props)
         this.state = {
             user : this.props.user,
-            check : false,
+            //check : false,
             roles : this.props.roles,
 
             roleId : null,
@@ -21,7 +21,7 @@ class settingsTemplates extends React.Component {
             valueText : null,
             defaultValue : null,
 
-            //check : 0,
+            check : 0,
 
             control : <button type="button" className="btn btn-outline-secondary" onClick={this.editRole}> <FontAwesomeIcon icon={faPen} /> </button>
         }
@@ -31,16 +31,31 @@ class settingsTemplates extends React.Component {
     componentDidMount() {
         if (this.state.user.role)
             this.setState({
-                check : this.state.user.check,
+                check : Number(this.state.user.check),
                 roleId : this.state.user.role.id,
                 value : this.state.user.role.name,
                 valueText : this.state.user.role.name,
                 defaultValue : this.state.user.role.name,
+                control: <button type="button" className="btn btn-outline-danger" onClick={this.deleteRole}> <FontAwesomeIcon icon={faTrash} /> </button>
             })
     }
 
     componentWillUnmount() {
 
+    }
+
+    deleteRole = () => {
+        const headers = ApiSettings.getHeaders()
+        const data = {
+            'id' : this.state.user.id,
+        }
+        Axios.delete('http://192.168.2.119:84/api/deleteSettingsRole/'+this.state.user.id,{
+            headers: headers
+        })
+            .then(response => {
+                console.log(response.data)
+                this.props.updateList()
+            })
     }
 
     editRole = () => {
@@ -128,8 +143,9 @@ class settingsTemplates extends React.Component {
   }
 
   checkOk = (event) => {
+      console.log(event.target.checked)
       let param = 0
-      if (event.target.check){
+      if (event.target.checked){
           param = 1
       }
 
@@ -146,6 +162,8 @@ class settingsTemplates extends React.Component {
                   "check" : param
               }
       const headers = ApiSettings.getHeaders()
+
+      console.log(data)
 
       Axios.put('http://192.168.2.119:84/api/updateSettingsRole/'+this.state.user.id, data, {
           headers: headers

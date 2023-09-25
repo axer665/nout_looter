@@ -66,23 +66,30 @@ class projectInfo extends React.Component {
                     ctx.stroke();
                 }
 
+                let oName
+                console.log(object.short_name)
+                if (object.short_name)
+                    oName = object.short_name
+                else if (object.name)
+                    oName = object.name
+
                 ctx.beginPath();
                 ctx.fillStyle = 'blue';
                 ctx.font = "12px Arial";
                 ctx.arc(xStart, 30, 5, 0, 2 * Math.PI);
                 //ctx.measureText(object.name).width = 50
-                let widthLength = xStart + ctx.measureText(object.name).width
+                let widthLength = xStart + ctx.measureText(oName).width
                 if (widthLength > mainWidth){
                     //xStart = widthLength - (ctx.measureText(object.name).width * 2)
                 }
                 if (key+1 == objects.length && objects.length>1){
-                    xStart = widthLength - (ctx.measureText(object.name).width * 2)
+                    xStart = widthLength - (ctx.measureText(oName).width * 2)
                     yPos = yPos + 30
                 } else if (objects.length == 1){
-                    xStep = ctx.measureText(object.name).width
+                    xStep = ctx.measureText(oName).width
                 }
 
-                ctx.fillText('(' + object.name + ')', xStart, yPos, xStep*2-10);
+                ctx.fillText('(' + oName + ')', xStart, yPos, xStep*2-10);
                 ctx.fill();
 
                 ctx.beginPath();

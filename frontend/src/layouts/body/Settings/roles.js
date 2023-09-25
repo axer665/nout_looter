@@ -46,7 +46,8 @@ class settingsTemplates extends React.Component {
         const headers = ApiSettings.getHeaders()
         const data = {
             userId : event.user,
-            roleId : event.role,
+            //roleId : event.role,
+            roleId : 1,
         }
         Axios.post('http://192.168.2.119:84/api/createSettingsUserRole', data, {
             headers: headers
@@ -56,6 +57,7 @@ class settingsTemplates extends React.Component {
         })
     }
 
+
     render(){
             let settingsMenu = <SettingsMenu key="1" selectedTab="1" />
 
@@ -64,6 +66,7 @@ class settingsTemplates extends React.Component {
                         <Role key={key}
                             user={user}
                             roles={this.state.roles}
+                            updateList={this.getUsers}
                         />
                        )
             })

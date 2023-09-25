@@ -19,7 +19,8 @@ import Projects from './body/projects.js'
 import Project from './body/project.js'
 import Object from './body/object.js'
 import AuthenticationUser from './body/Auth/authentication'
-import User from './body/Auth/user'
+//import User from './body/Auth/user'
+import User from './body/Auth/timeUser'
 import Model from './body/model'
 
 import Informer from './../components/informer/main'
@@ -122,13 +123,15 @@ class masterLayout extends React.Component {
               body = <Model />
               break;
           case "user":
-            console.log(this.props.checkToken)
+            //console.log(this.props.checkToken)
             if (this.props.checkToken)
                 body = <User user={this.state.user} rerender={this.rerender} />
             else
                 body = <AuthenticationUser key={this.state.rerenderKey} rerender={this.rerender} />
             break;
-
+          case "userData":
+                body = <User user={this.state.user} rerender={this.rerender} />
+            break
           case "checkList":
             head = <Header head="project" user={this.state.user} />
             body = <CheckList />
@@ -200,7 +203,7 @@ class masterLayout extends React.Component {
             )
 
         } else {
-            return (
+            return null /*(
 
                 <div>
                     <div className="main-container">
@@ -229,7 +232,7 @@ class masterLayout extends React.Component {
                         </div>
                     </div>
                 </div>
-            )
+            )*/
         }
     }
 }

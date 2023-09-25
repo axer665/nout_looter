@@ -40,10 +40,10 @@ function Example(props) {
         addInformerMethod('Не указан тип объекта')
     } else if (!newTemplateSection) {
         addInformerMethod('Не указан <раздел проекта>')
-    } else if (!newTemplateName) {
-        addInformerMethod('Поле <Версия> не может быть пустым')
+    //} else if (!newTemplateName) {
+    //    addInformerMethod('Поле <Версия> не может быть пустым')
     } else {
-        props.addTemplate({'version': newTemplateName, 'stage': newTemplateStage, 'section': newTemplateSection, 'type': newTemplateOType})
+        props.addTemplate({/*'version': newTemplateName, */'stage': newTemplateStage, 'section': newTemplateSection, 'type': newTemplateOType})
         addInformerMethod('Шаблон создан')
         setShow(false)
     }
@@ -99,14 +99,14 @@ function Example(props) {
 
                 </thead>
                 <tbody>
-                    <tr>
+                {/*<tr>
                         <td>
                             Версия
                         </td>
                         <td>
                             <input type="text" onChange={setName} />
                         </td>
-                    </tr>
+                    </tr>*/}
                     <tr>
                         <td>
                             Тип объекта

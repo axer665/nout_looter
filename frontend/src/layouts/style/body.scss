@@ -143,6 +143,52 @@ $scrollWidth : 8px;
     padding:3px 6px;
   }
 }
+.block-user-settings-main{
+  p{
+    margin-bottom:0;
+  }
+  .container-parameters-item-line{
+    margin-bottom: 0!important;
+  }
+  .block-user-settings-main-list{
+    border: 1px solid black;
+    margin-bottom: 12px;
+    &>div{
+      padding: 3px 6px;
+    }
+    &>div:nth-child(2n+1){
+      background-color: #efefef;
+    }
+  }
+  .user_data-settings-header{
+    width: 35%;
+  }
+  .user_data-settings-value{
+    width: calc(75% - 100px);
+  }
+  .user_data-settings-control{
+    width: 100px;
+  }
+}
+.user-settings-project_assignment-link{
+  color: black;
+  text-decoration: none;
+  &:hover{
+    color: black;
+    text-decoration: none;
+  }
+}
+.user-settings-project_assignment{
+  border: 1px solid #cecece;
+  padding: 12px;
+  margin-bottom: 32px;
+  -webkit-transition: all 0.2s;
+  transition: all 0.2s;
+  &:hover{
+    box-shadow: 3px 3px 6px 1px #cecece;
+  }
+}
+
 
 // CONTAINER LISTS
 .container-lists{
@@ -689,27 +735,28 @@ $scrollWidth : 8px;
       }
     }
     .s_roles_list-item-email_header{
-      width: 40%;
+      width: 45%;
     }
     .s_roles_list-item-done_header{
-      width: 20%;
+      width: 10%;
     }
     .s_roles_list-item-role_header{
-      width: calc(40% + #{$scrollWidth});
+      width: calc(45% + #{$scrollWidth});
     }
   }
   .container-list-settings_users{
     .s_roles_list-item-email{
-      width: 40%;
+      width: 45%;
     }
     .s_roles_list-item-done{
-      width: 20%;
+      width: 10%;
+      text-align: center;
     }
     .s_roles_list-item-role{
-      width: calc(40% - 150px);
+      width: calc(45% - 60px);
     }
     .s_roles_list-item-control{
-      width: 150px;
+      width: 60px;
     }
   }
 
@@ -895,7 +942,7 @@ $scrollWidth : 8px;
 
 // MENUS
 
-.container-menu-project_menu, .container-menu-settings_menu{
+.container-menu-project_menu, .container-menu-settings_menu, .container-menu-user_menu{
   margin-top: 16px;
   margin-bottom: 32px;
   a{

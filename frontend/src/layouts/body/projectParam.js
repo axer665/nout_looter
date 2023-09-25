@@ -7,6 +7,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCheck, faXmark, faPen } from '@fortawesome/free-solid-svg-icons'
 
 import Informer from './../../components/informer/main'
+import ApiProj from "../../api/Projects";
 
 class body extends React.Component {
     constructor(props) {
@@ -155,10 +156,11 @@ class body extends React.Component {
             'propName' : (this.state.name == "type") ? 'project_type_id' : this.state.name,
             'propValue' : (this.props.keyType == "text") ? this.state.valueText : this.state.valueSelectedId,
         }
-        const headers = {
+        /*const headers = {
            "Content-Type": "application/json",
            Authorization: "Bearer " + "4|lYkjKOIEawdFpsIuc9c3fUY6wpQBwKlCEV3uOo03"
-        }
+        }*/
+       const headers = ApiProj.getHeaders()
 
 
         Axios.put('http://192.168.2.119:84/api/updateProject/'+this.props.projectId, data, {

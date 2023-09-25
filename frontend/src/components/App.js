@@ -22,7 +22,7 @@ import Footer from './../layouts/footer'
 import ApiUser from './../api/User'
 
 import Store from 'store'
-
+import Header from './../layouts/header'
 
 
 class App extends Component {
@@ -54,7 +54,7 @@ class App extends Component {
         })
     }*/
 
-    this.checkToken()
+    //this.checkToken()
   }
 
   checkToken = () => {
@@ -95,12 +95,15 @@ class App extends Component {
 
 
   render() {
+      return "asfagfg"
+    /*
     let user = this.state.user
 
     if (this.state.checkToken !== null){
         return (
             <div>
                 <Router>
+
                     <Routes>
                         <Route path="/"
                             element={<MasterLayout body="start" user={user} />}
@@ -115,6 +118,8 @@ class App extends Component {
                         <Route path="/checkList/:projId/:id" element={<MasterLayout key='checkList' body='checkList' user={this.state.user} checkToken={this.state.checkToken} />} />
 
                         <Route path="/user" element={<MasterLayout key='user' body='user' user={this.state.user} checkToken={this.state.checkToken}  />} />
+                        <Route path="/user/:id/:trigger" element={<MasterLayout key='userData' body='userData' user={this.state.user} checkToken={this.state.checkToken}  />} />
+
                         <Route path="/object/:id" element={<MasterLayout key='object' body='object' user={this.state.user} checkToken={this.state.checkToken} />} />
                         <Route path="/model/:id" element={<MasterLayout key='model' body='model' user={this.state.user} checkToken={this.state.checkToken} />} />
 
@@ -130,7 +135,7 @@ class App extends Component {
           )
     } else {
         return null
-    }
+    }*/
   }
 }
 

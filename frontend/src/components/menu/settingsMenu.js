@@ -20,7 +20,7 @@ class settingsMenu extends React.Component {
                 },
                 {
                     id: 1,
-                    name: "Пользователи",
+                    name: "Администраторы",
                     link: "/settings/users",
                 },
                 {

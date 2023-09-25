@@ -24,7 +24,7 @@ class sideBarMenu extends React.Component {
                             },*/
 
                         ]
-        if (props.user && props.userAssignments){
+        if (props.user && props.userAssignments && props.userAssignments.roles_ids){
             if ((props.user.user_role && props.userAssignments.roles_data.length > 0) || props.userAssignments.roles_ids.manager){
                 readiness.push({
                     id: 2,
@@ -34,11 +34,11 @@ class sideBarMenu extends React.Component {
             }
             if (props.user.user_role)
                 if (Number(props.user.user_role.role_id) == 2 || Number(props.user.user_role.role_id) == 1){
-                    readiness.push({
+                    /*readiness.push({
                         id: 3,
                         name: "Оценка готовности модели 2",
                         link: "/project/"+this.props.projectId+"/report",
-                    })
+                    })*/
                 }
         } else if (props.selectedTab == 2){
             readiness.push({

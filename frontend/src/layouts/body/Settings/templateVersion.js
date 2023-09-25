@@ -26,7 +26,7 @@ class settingsTemplateVersion extends React.Component {
 
             control : (
                 <span>
-                    <button type="button" className="btn btn-outline-secondary" onClick={this.editTemplate}><FontAwesomeIcon icon={faPen} /></button>
+                    {/*<button type="button" className="btn btn-outline-secondary" onClick={this.editTemplate}><FontAwesomeIcon icon={faPen} /></button>*/}
                     <Link to={"/settings/template/"+this.props.template.id}>
                         <button type="button" className="btn btn-outline-primary"><FontAwesomeIcon icon={faList} /></button>
                     </Link>
@@ -52,9 +52,9 @@ class settingsTemplateVersion extends React.Component {
                 disabled : true,
                 control : (
                     <span>
-                        <span title="">
+                        {/*<span title="">
                             <button type="button" className="btn btn-outline-secondary" onClick={this.editTemplate}><FontAwesomeIcon icon={faPen} /></button>
-                        </span>
+                        </span>*/}
                         <Link to={"/settings/template/"+this.props.template.id}>
                             <button type="button" className="btn btn-outline-primary"><FontAwesomeIcon icon={faList} /></button>
                         </Link>
@@ -68,7 +68,7 @@ class settingsTemplateVersion extends React.Component {
             this.setState({
                 control : (
                     <span>
-                        <button type="button" className="btn btn-outline-secondary" onClick={this.editTemplate}><FontAwesomeIcon icon={faPen} /></button>
+                        {/*<button type="button" className="btn btn-outline-secondary" onClick={this.editTemplate}><FontAwesomeIcon icon={faPen} /></button>*/}
                         <Link to={"/settings/template/"+this.props.template.id}>
                             <button type="button" className="btn btn-outline-primary"><FontAwesomeIcon icon={faList} /></button>
                         </Link>
@@ -88,7 +88,7 @@ class settingsTemplateVersion extends React.Component {
             version : <input type="text" defaultValue={this.state.version} onChange={this.newVersion} />,
             control : (
                 <span>
-                    <button type="button" className="btn btn-outline-primary" onClick={this.editOk}><FontAwesomeIcon icon={faCheck} /></button>
+                    {/*<button type="button" className="btn btn-outline-primary" onClick={this.editOk}><FontAwesomeIcon icon={faCheck} /></button>*/}
                     <button type="button" className="btn btn-outline-warning" onClick={this.editCancel}><FontAwesomeIcon icon={faXmark} /></button>
                     <button type="button" className="btn btn-outline-danger"><FontAwesomeIcon icon={faTrash} /></button>
                 </span>
@@ -113,7 +113,7 @@ class settingsTemplateVersion extends React.Component {
             version : this.state.versionText,
             control : (
                             <span>
-                                <button type="button" className="btn btn-outline-secondary" onClick={this.editTemplate}><FontAwesomeIcon icon={faPen} /></button>
+                                {/*<button type="button" className="btn btn-outline-secondary" onClick={this.editTemplate}><FontAwesomeIcon icon={faPen} /></button>*/}
                                 <Link to={"/settings/template/"+this.props.template.id}>
                                     <button type="button" className="btn btn-outline-primary"><FontAwesomeIcon icon={faList} /></button>
                                 </Link>
@@ -194,7 +194,7 @@ class settingsTemplateVersion extends React.Component {
                     {this.state.stageName}
                 </div>
                 <div className="template_list-item-check">
-                    <input type="checkbox" checked={this.state.checked} disabled={this.state.disabled} onChange={this.checkOk} />
+                    <input type="checkbox" checked={Number(this.state.checked)} disabled={this.state.disabled} onChange={this.checkOk} />
                 </div>
                 <div className="template_list-item-control">
                     {this.state.control}

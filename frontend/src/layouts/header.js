@@ -3,13 +3,15 @@ import ReactDOM from "react-dom";
 import { Routes, Route, useParams, Link } from 'react-router-dom';
 
 /* import images */
-import MenuManufacture from '../../src/images/menu/manufacture.png'
-import MenuTrain from '../../src/images/menu/train.png'
-import MenuRoad from '../../src/images/menu/road.png'
+import MenuManufacture from '../../src/images/menu/header_menu/pgs_100х100.png'
+import MenuTrain from '../../src/images/menu/header_menu/metro_100х100.png'
+import MenuRoad from '../../src/images/menu/header_menu/roads_100х100.png'
 import MenuUser from '../../src/images/menu/user-circle.svg'
 import MenuSearch from '../../src/images/menu/search.svg'
-import Report from '../../src/images/menu/shmidt.png'
-import Settings from '../../src/images/menu/gear.png'
+import Report from '../../src/images/menu/header_menu/reports_100х100.png'
+import Settings from '../../src/images/menu/header_menu/settings_100х100.png'
+
+/* new Menu Icons */
 
 /* import components */
 import ApiProj from './../api/Projects'
@@ -24,7 +26,7 @@ const MYheader = (props) => {
     const [projectInfo, resultProjectData] = useState(null);
     const params = useParams()
 
-    //console.log(props)
+    console.log(props)
 
     if (props.head == "project"){
         let projectId = params.projId
@@ -48,12 +50,12 @@ const MYheader = (props) => {
                             <>
                                 <li>
                                     <Link to={"/reports/main"}>
-                                        <img src={Report} />
+                                        <img src={Report} title="Отчеты" />
                                     </Link>
                                 </li>
                                 <li>
                                     <Link to={"/settings"}>
-                                        <img src={Settings} />
+                                        <img src={Settings} title="Настройки" />
                                     </Link>
                                 </li>
                             </>
@@ -92,12 +94,12 @@ const MYheader = (props) => {
                 <>
                     <li>
                         <Link to={"/reports/main"}>
-                            <img src={Report} />
+                            <img src={Report} title="Отчеты" />
                         </Link>
                     </li>
                     <li>
                         <Link to={"/settings/templates"}>
-                            <img src={Settings} />
+                            <img src={Settings} title="Настройки" />
                         </Link>
                     </li>
                 </>
@@ -107,17 +109,17 @@ const MYheader = (props) => {
         <>
             <li>
                 <Link to={"/projects/3"}>
-                    <img src={MenuManufacture} />
+                    <img src={MenuManufacture} title="ПГС"/>
                 </Link>
             </li>
             <li>
                 <Link to={"/projects/1"}>
-                    <img src={MenuTrain} />
+                    <img src={MenuTrain} title="Метро"/>
                 </Link>
             </li>
             <li>
                 <Link to={"/projects/2"}>
-                    <img src={MenuRoad} />
+                    <img src={MenuRoad} title="Дороги"/>
                 </Link>
             </li>
         </>
@@ -129,6 +131,12 @@ const MYheader = (props) => {
         </>
     )
 
+    let userLink="/user/"
+    if (props.user){
+        if (props.user.id){
+            userLink = "/user/"+props.user.id+"/main"
+        }
+    }
 
     return (
 
@@ -173,7 +181,7 @@ const MYheader = (props) => {
                     </li>
 
                     <li>
-                        <Link to={"/user"}>
+                        <Link to={userLink}>
                             <img src={MenuUser} />
                         </Link>
                     </li>

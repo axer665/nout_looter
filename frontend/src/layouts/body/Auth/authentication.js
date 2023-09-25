@@ -89,7 +89,7 @@ class AuthenticationUser extends React.Component {
         } else*/ if (!this.state.email){
            this.addInformer('Поле "E-mail" не может быть пустым')
         }
-        else if (!this.state.first_name){
+        /*else if (!this.state.first_name){
            this.addInformer('Поле "Фамилия" не может быть пустым')
         }
         else if (!this.state.last_name){
@@ -118,19 +118,18 @@ class AuthenticationUser extends React.Component {
             .then(response => {
                 console.log(response.data)
                 console.log(response.data.error)
-
                     Store.set('user', {
                         'name':response.data.user.login,
                         'email':response.data.user.email,
                         'token':response.data.token
                     })
                     //document.location.reload(); //return false;
-                    this.props.history.push('/user')
+                    this.props.history.push('/user/'+response.data.user.id+'/main')
                     this.props.rerender()
 
             })
             .catch(error => {
-                //console.log(error.response.status)
+                console.log(error.response.status)
                 if (error.response){
                     console.log(error.response.data)
                     if (error.response.data.error.email){
@@ -157,12 +156,12 @@ class AuthenticationUser extends React.Component {
                               {/*<input type="text" className="authentication-name" onChange={event => this.inputData(event, 'login')} placeholder="Имя пользователя (Логин)" /><br/>*/}
                             <input type="text" className="authentication-email" onChange={event => this.inputData(event, 'email')} placeholder="E-mail" /><br/>
 
-                            <input type="text" className="authentication-first_name" onChange={event => this.inputData(event, 'first_name')} placeholder="Фамилия" /><br/>
+                              {/* <input type="text" className="authentication-first_name" onChange={event => this.inputData(event, 'first_name')} placeholder="Фамилия" /><br/>
                             <input type="text" className="authentication-last_name" onChange={event => this.inputData(event, 'last_name')} placeholder="Имя" /><br/>
                             <input type="text" className="authentication-patronymic" onChange={event => this.inputData(event, 'patronymic')} placeholder="Отчество" /><br/>
 
-                              {/*<input type="text" className="authentication-company" onChange={event => this.inputData(event, 'company')} placeholder="Компания" /><br/>*/}
-                              {/*<input type="text" className="authentication-function" onChange={event => this.inputData(event, 'function')} placeholder="Должность" /><br/>*/}
+                              <input type="text" className="authentication-company" onChange={event => this.inputData(event, 'company')} placeholder="Компания" /><br/>
+                              <input type="text" className="authentication-function" onChange={event => this.inputData(event, 'function')} placeholder="Должность" /><br/>*/}
                             <input type="password" className="authentication-password" onChange={event => this.inputData(event, 'password')} placeholder="Пароль" /><br/>
                             <input type="password" className="authentication-repassword" onChange={event => this.inputData(event, 'repassword')} placeholder="Повторите пароль" /><br/>
 

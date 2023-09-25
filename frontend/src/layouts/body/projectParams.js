@@ -16,7 +16,7 @@ class projectParams extends React.Component {
         let analyzer = null
         let desiredParams = [
             'code',
-            'short_name',
+            //'short_name',
             'name',
             'type',
             'status',

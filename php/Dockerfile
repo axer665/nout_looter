@@ -1,4 +1,5 @@
 FROM php:8.0-fpm
+#FROM php:8.0-zts
 
  #Copy composer.lock and composer.json
 #COPY  ./composer.json /var/www/
@@ -25,15 +26,14 @@ RUN docker-php-ext-install pdo pdo_mysql
 # Clear cache
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
-
 # Install PHP extensions
 
 ADD https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions /usr/local/bin/
 
 # RUN chmod +x /usr/local/bin/install-php-extensions && sync && \
 #    install-php-extensions mbstring pdo_mysql zip exif pcntl gd
-
-
+    
+#RUN pecl install parallel
 
 # Install composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
@@ -43,8 +43,8 @@ RUN curl -sL https://deb.nodesource.com/setup_17.x| bash -
 RUN apt-get install -y nodejs
 
 #Include ReactJS
-RUN composer create-project laravel/laravel react-js
-RUN composer require laravel/ui
+#RUN composer create-project laravel/laravel react-js
+#RUN composer require laravel/ui
 #RUN php artisan ui react
 #RUN npm install
 #RUN npm install redux
